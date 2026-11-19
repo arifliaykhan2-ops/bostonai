@@ -54,6 +54,11 @@ function AppCard({ app }: { app: Effect }) {
     >
       <View style={s.thumbWrap}>
         {app.poster_url ? <Image source={{ uri: app.poster_url }} style={s.thumb} contentFit="cover" transition={200} /> : null}
+        {app.before_url ? (
+          <View style={s.before}>
+            <Image source={{ uri: app.before_url }} style={s.thumb} contentFit="cover" transition={200} />
+          </View>
+        ) : null}
       </View>
       <Text numberOfLines={1} style={s.title}>
         {app.title}
@@ -83,6 +88,19 @@ const useStyles = makeStyles((c) => ({
   pressed: { opacity: 0.85, transform: [{ scale: 0.98 }] },
   thumbWrap: { borderRadius: 10, overflow: 'hidden', backgroundColor: c.surfaceAlt, aspectRatio: 1 },
   thumb: { width: '100%', height: '100%' },
+  // Example input, inset bottom-left over the example result.
+  before: {
+    position: 'absolute',
+    left: 6,
+    bottom: 6,
+    width: '34%',
+    aspectRatio: 1,
+    borderRadius: 8,
+    overflow: 'hidden',
+    borderWidth: 2,
+    borderColor: 'rgba(255,255,255,0.9)',
+    backgroundColor: c.surfaceAlt,
+  },
   title: { color: c.text, fontSize: 15, fontWeight: '700', marginTop: 8, paddingHorizontal: 4 },
   subtitle: { color: c.textMuted, fontSize: 12, marginTop: 2, paddingHorizontal: 4 },
 }));
