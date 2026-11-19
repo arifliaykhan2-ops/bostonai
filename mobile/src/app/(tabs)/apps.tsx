@@ -1,0 +1,88 @@
+import * as Haptics from 'expo-haptics';
+import { Image } from 'expo-image';
+import { router } from 'expo-router';
+import { ActivityIndicator, Platform, Pressable, ScrollView, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ScreenBackground } from '@/components/ScreenBackground';
+import { PageHeader } from '@/components/ui';
+import { useApps, type Effect } from '@/lib/effects';
+import { makeStyles, space } from '@/theme';
+
+/** Apps: one-photo tools (Relight, Headshot, Hair, Outfit Swap…), like Higgsfield's Apps. */
+export default function AppsScreen() {
+  const s = useStyles();
+  const insets = useSafeAreaInsets();
+  const { apps, loading } = useApps();
+
+  return (
+    <View style={s.container}>
+      <ScreenBackground />
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={[
+          s.content,
+          { paddingTop: Math.max(insets.top, 24) + 12, paddingBottom: Math.max(insets.bottom, 24) + 90 },
+        ]}
+        showsVerticalScrollIndicator={false}
+      >
+        <PageHeader title="Apps" subtitle="One photo in, pro result out." />
+        {loading ? (
+          <ActivityIndicator style={{ marginTop: space.xl }} />
+        ) : (
+          <View style={s.grid}>
+            {apps.map((app) => (
+              <AppCard key={app.id} app={app} />
+            ))}
+          </View>
+        )}
+      </ScrollView>
+    </View>
+  );
+}
+
+function AppCard({ app }: { app: Effect }) {
+  const s = useStyles();
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={`${app.title}. ${app.subtitle ?? ''}`}
+      onPress={() => {
+        if (Platform.OS !== 'web') void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        router.push({ pathname: '/effect/[id]', params: { id: app.id } });
+      }}
+      style={({ pressed }) => [s.card, pressed && s.pressed]}
+    >
+      <View style={s.thumbWrap}>
+        {app.poster_url ? <Image source={{ uri: app.poster_url }} style={s.thumb} contentFit="cover" transition={200} /> : null}
+      </View>
+      <Text numberOfLines={1} style={s.title}>
+        {app.title}
+      </Text>
+      {app.subtitle ? (
+        <Text numberOfLines={1} style={s.subtitle}>
+          {app.subtitle}
+        </Text>
+      ) : null}
+    </Pressable>
+  );
+}
+
+const useStyles = makeStyles((c) => ({
+  container: { flex: 1, backgroundColor: c.bg },
+  content: { paddingHorizontal: space.md },
+  grid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', rowGap: 10 },
+  card: {
+    width: '48.5%',
+    backgroundColor: c.surface,
+    borderWidth: 1,
+    borderColor: c.border,
+    borderRadius: 14,
+    padding: 6,
+    paddingBottom: 10,
+  },
+  pressed: { opacity: 0.85, transform: [{ scale: 0.98 }] },
+  thumbWrap: { borderRadius: 10, overflow: 'hidden', backgroundColor: c.surfaceAlt, aspectRatio: 1 },
+  thumb: { width: '100%', height: '100%' },
+  title: { color: c.text, fontSize: 15, fontWeight: '700', marginTop: 8, paddingHorizontal: 4 },
+  subtitle: { color: c.textMuted, fontSize: 12, marginTop: 2, paddingHorizontal: 4 },
+}));

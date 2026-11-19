@@ -1,0 +1,32 @@
+project_id = "boson-ai"
+
+[auth]
+site_url = "http://localhost:8081"
+# Email sign-in links may return to: web preview, the iOS app, Expo Go.
+additional_redirect_urls = ["http://localhost:8081/**", "boson://**", "exp://**"]
+# Guest accounts while email sign-in is parked; an email can be linked later.
+enable_anonymous_sign_ins = true
+
+# Webhooks are called by fal.ai and RevenueCat, not by signed-in users.
+# Each function verifies its caller itself (Ed25519 signature / shared secret).
+[functions.fal-webhook]
+verify_jwt = false
+
+[functions.revenuecat-webhook]
+verify_jwt = false
+
+# Public: only refreshes the model catalog from fal.ai, rate-limited by freshness.
+[functions.sync-models]
+verify_jwt = false
+
+# Public: only refreshes the Home feed from Civitai, rate-limited by freshness.
+[functions.sync-showcase]
+verify_jwt = false
+
+# Admin-only: renders example videos for trend templates. Checks x-admin-token itself.
+[functions.seed-effect-previews]
+verify_jwt = false
+
+# Public: only adds Vidu templates fal.ai newly supports, rate-limited per instance.
+[functions.sync-effects]
+verify_jwt = false
