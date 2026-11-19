@@ -25,6 +25,8 @@ export type Effect = {
   credits: number;
   preview_url: string | null;
   poster_url: string | null;
+  /** Apps: the example input photo, shown small beside the result (poster_url). */
+  before_url: string | null;
   width: number | null;
   height: number | null;
   created_at: string;
@@ -61,7 +63,7 @@ async function load() {
   const { data, error } = await supabase
     .from('effects')
     .select(
-      'id, title, subtitle, category, credits, preview_url, poster_url, width, height, created_at, sort, section, kind, input_kind, choices, image2, description, text_input, requires_consent, more_photos, video_input',
+      'id, title, subtitle, category, credits, preview_url, poster_url, before_url, width, height, created_at, sort, section, kind, input_kind, choices, image2, description, text_input, requires_consent, more_photos, video_input',
     )
     .eq('enabled', true)
     .order('created_at', { ascending: false })
