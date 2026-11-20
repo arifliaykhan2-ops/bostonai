@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 import { Platform } from 'react-native';
 import { isExpoGo } from './env';
 import { supabase } from './supabase';
+import { locale } from '@/i18n';
 
 /** Opens the result screen when the user taps a "your video is ready" push. */
 export function useNotificationRouting() {
@@ -45,5 +46,6 @@ export async function registerPushToken(userId: string) {
   if (status !== 'granted') return;
 
   const { data: token } = await Notifications.getExpoPushTokenAsync({ projectId });
-  await supabase.from('profiles').update({ push_token: token }).eq('id', userId);
+  // The locale lets fal-webhook send the "ready" push in the app's language.
+  await supabase.from('profiles').update({ push_token: token, locale }).eq('id', userId);
 }

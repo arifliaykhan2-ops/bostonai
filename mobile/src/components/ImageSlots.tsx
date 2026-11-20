@@ -4,6 +4,10 @@ import { Pressable, Text, View } from 'react-native';
 import { SectionLabel } from '@/components/ui';
 import type { ImageSlot } from '@/lib/pricing';
 import { makeStyles, radius, space } from '@/theme';
+import { t, tMaybe } from '@/i18n';
+
+/** Slot labels come from the model catalog (English); known ones are translated. */
+const slotLabel = (label: string) => tMaybe(`slot.${label}`, label);
 
 /** Photo pickers for a model's inputs: start/end frame, or edit references. */
 export function ImageSlots({
@@ -28,7 +32,7 @@ export function ImageSlots({
 
   return (
     <View>
-      <SectionLabel>{slots[0].array || slots.length === 1 ? 'Photos' : 'Frames'}</SectionLabel>
+      <SectionLabel>{slots[0].array || slots.length === 1 ? t('slots.photos') : t('slots.frames')}</SectionLabel>
       <View style={s.row}>
         {visible.map((slot) => {
           const uri = values[slot.key];
@@ -36,7 +40,7 @@ export function ImageSlots({
             <View key={slot.key} style={s.slotWrap}>
               <Pressable
                 accessibilityRole="button"
-                accessibilityLabel={uri ? `Change ${slot.label}` : `Choose ${slot.label}`}
+                accessibilityLabel={uri ? t('effect.changeX', { what: slotLabel(slot.label) }) : t('effect.chooseX', { what: slotLabel(slot.label) })}
                 onPress={() => pick(slot.key)}
                 style={[s.slot, slot.required && !uri && s.slotRequired]}
               >
@@ -47,12 +51,12 @@ export function ImageSlots({
                 )}
               </Pressable>
               {uri && !slot.required && (
-                <Pressable accessibilityLabel={`Remove ${slot.label}`} onPress={() => onChange(slot.key, null)} style={s.remove}>
+                <Pressable accessibilityLabel={t('slots.remove', { what: slotLabel(slot.label) })} onPress={() => onChange(slot.key, null)} style={s.remove}>
                   <Text style={s.removeText}>×</Text>
                 </Pressable>
               )}
               <Text numberOfLines={2} style={s.label}>
-                {slot.label}
+                {slotLabel(slot.label)}
               </Text>
             </View>
           );

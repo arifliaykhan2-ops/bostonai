@@ -1,0 +1,5 @@
+{
+  "CFBundleDisplayName": "Boson AI",
+  "NSPhotoLibraryUsageDescription": "Boson AI používa vaše fotky, aby ste z nich mohli vytvárať videá.",
+  "NSPhotoLibraryAddUsageDescription": "Boson AI ukladá vytvorené obrázky a videá do vašej knižnice fotiek."
+}

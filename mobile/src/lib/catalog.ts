@@ -1,3 +1,4 @@
+import { t } from '@/i18n';
 import { useEffect, useState } from 'react';
 import type { ImageSlot, ParamSpec, PricingInfo } from './pricing';
 import { supabase } from './supabase';
@@ -72,8 +73,8 @@ export function modeOf(m: ModelInfo): CreateMode {
 
 /** Short label shown on model cards. */
 export function modelMode(m: ModelInfo): string {
-  if (m.kind === 'image') return m.is_edit ? 'Photo edit' : 'Text → image';
-  return m.needs_image ? 'Photo → video' : 'Text → video';
+  if (m.kind === 'image') return m.is_edit ? t('catalog.photoEdit') : t('catalog.textToImage');
+  return m.needs_image ? t('catalog.photoToVideo') : t('catalog.textToVideo');
 }
 
 export const isVideoUrl = (url: string) => /\.(mp4|mov|webm)(\?|$)/i.test(url);

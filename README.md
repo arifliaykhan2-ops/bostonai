@@ -82,10 +82,29 @@ Web preview works for UI work only: `npm run web`.
 - In RevenueCat, add them to an offering and design the paywall.
 - Webhook URL: `<SUPABASE_URL>/functions/v1/revenuecat-webhook`. Set the Authorization header to `Bearer <REVENUECAT_WEBHOOK_SECRET>`.
 
+## Languages
+The app ships in every App Store language (47 iOS localizations, including Arabic, Hebrew and Urdu right-to-left). It follows the device language, or iOS Settings → Boson AI → Language.
+- UI strings: `mobile/src/i18n/locales/en.json` is the source; use `t('key')` / `tp('key', count)` from `@/i18n`.
+- Apps tab content (titles, descriptions, options) comes from `public.effects`; the script copies it into `en.json` as `fx.<id>.*` keys. Trend template titles stay in English.
+- iOS permission texts: `mobile/src/i18n/native/<locale>.json`. Push texts: `supabase/functions/_shared/push-strings.json`.
+- After changing English text or adding an app: refresh `en.json` from the database, then add the new keys to each locale (by hand or with an AI assistant) and check them:
+  ```bash
+  node scripts/translate.mjs --sync-only        # pulls Apps tab texts into en.json
+  python3 scripts/write-locale.py de < de.txt   # "key = value" lines → locales/de.json (+ placeholder checks)
+  ```
+  A key missing in a locale falls back to English. `FAL_KEY=... node scripts/translate.mjs` can also machine-translate what is missing.
+
+## Safety
+- `generate` checks prompts and Talking Photo scripts (`_shared/moderation.ts`: word list + multilingual LLM check) and limits each user to 4 running jobs and 40 per hour (`_shared/limits.ts`).
+- Report button on results and community posts → `public.reports`. A community post with 3 reports goes into `public.blocked_content` and disappears for everyone; the reporter stops seeing it right away. Review open reports in the `reports` table (`status = 'open'`).
+
+## Legal pages
+`docs/` is served by GitHub Pages: `https://arifliaykhan2-ops.github.io/bostonai/privacy.html` and `terms.html`. Use these URLs in App Store Connect and in the RevenueCat paywall.
+
 ## Before App Store submission
-- [ ] Revoke the Sign in with Apple token on account deletion (`delete-account` TODO)
-- [ ] Rate limit and prompt moderation in `generate`
-- [ ] Report/flag button on results (guideline 1.2)
-- [ ] Privacy policy URL + App Privacy labels (prompts and photos are shared with fal.ai)
+- [x] Revoke the Sign in with Apple token on account deletion — set the `APPLE_TEAM_ID`, `APPLE_KEY_ID`, `APPLE_PRIVATE_KEY` secrets (a "Sign in with Apple" key from developer.apple.com)
+- [x] Rate limit and prompt moderation in `generate`
+- [x] Report/flag button on results (guideline 1.2)
+- [x] Privacy policy + terms (`docs/`); still fill in the App Privacy labels in App Store Connect (prompts and photos are shared with fal.ai)
 - [ ] Re-check fal.ai endpoint IDs and per-second prices, then adjust credit costs
-- [ ] App icon and splash in `mobile/assets`
+- [x] App icon and splash in `mobile/assets`

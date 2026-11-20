@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useSyncExternalStore } from 'react';
+import { tMaybe } from '@/i18n';
 import { supabase } from './supabase';
 import type { TextInput } from '../../../supabase/functions/_shared/effects';
 
@@ -130,3 +131,30 @@ export function effectAspect(e: Pick<Effect, 'width' | 'height'>): number {
 /** Effect id from a job's preset_id ("effect:vidu-hug"), if the job came from a template. */
 export const effectIdOfJob = (presetId: string | null) =>
   presetId?.startsWith('effect:') ? presetId.slice('effect:'.length) : null;
+
+/** Same as optionKey() in scripts/translate.mjs: long values (prompt texts) become a short hash. */
+function optionKey(value: string | number): string {
+  const v = String(value);
+  if (v.length <= 40) return v;
+  let h = 5381;
+  for (let i = 0; i < v.length; i++) h = ((h * 33) ^ v.charCodeAt(i)) >>> 0;
+  return `h${h.toString(36)}`;
+}
+
+/**
+ * Translated text of an app / action row (keys fx.<id>.* in the locale files, made by
+ * scripts/translate.mjs from the database). Trend templates and rows added since the
+ * last translation run fall back to the English text from the database.
+ */
+export const fx = {
+  title: (e: Effect) => tMaybe(`fx.${e.id}.title`, e.title),
+  subtitle: (e: Effect) => (e.subtitle ? tMaybe(`fx.${e.id}.subtitle`, e.subtitle) : null),
+  description: (e: Effect) => (e.description ? tMaybe(`fx.${e.id}.description`, e.description) : null),
+  choiceLabel: (e: Effect, c: Choice) => tMaybe(`fx.${e.id}.${c.field}`, c.label),
+  optionLabel: (e: Effect, c: Choice, o: Choice['options'][number]) =>
+    tMaybe(`fx.${e.id}.${c.field}.${optionKey(o.value)}`, o.label),
+  image2Label: (e: Effect) => (e.image2 ? tMaybe(`fx.${e.id}.image2`, e.image2.label) : ''),
+  videoLabel: (e: Effect) => (e.video_input ? tMaybe(`fx.${e.id}.video`, e.video_input.label) : ''),
+  textLabel: (e: Effect) => (e.text_input ? tMaybe(`fx.${e.id}.text`, e.text_input.label) : ''),
+  textPlaceholder: (e: Effect) => (e.text_input ? tMaybe(`fx.${e.id}.placeholder`, e.text_input.placeholder ?? '') : ''),
+};

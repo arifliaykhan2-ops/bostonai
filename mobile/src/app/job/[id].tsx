@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Platform, ScrollView, Share, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ActionItem, ActionList, DetailHeader, MediaCard, MediaVideo, PromptCard } from '@/components/DetailParts';
+import { ReportAction } from '@/components/ReportAction';
 import { ScreenBackground } from '@/components/ScreenBackground';
 import { PublishIcon, ScissorsIcon } from '@/components/Icons';
 import { Button } from '@/components/ui';
@@ -14,17 +15,18 @@ import { useJob } from '@/hooks/useJobs';
 import { outputUrl, runJobAction, type Job } from '@/lib/api';
 import { useModels } from '@/lib/catalog';
 import { hasAiConsent } from '@/lib/consent';
-import { effectIdOfJob, useEffectById, useJobActions, type Effect } from '@/lib/effects';
+import { formatDate, t, tp } from '@/i18n';
+import { effectIdOfJob, fx, useEffectById, useJobActions, type Effect } from '@/lib/effects';
 import { useCredits } from '@/hooks/useCredits';
 import { makeStyles, radius, space, useTheme } from '@/theme';
 
 function timeAgo(iso: string) {
   const mins = Math.round((Date.now() - new Date(iso).getTime()) / 60000);
-  if (mins < 1) return 'just now';
-  if (mins < 60) return `${mins} min ago`;
+  if (mins < 1) return t('time.justNow');
+  if (mins < 60) return tp('time.minutesAgo', mins);
   const h = Math.round(mins / 60);
-  if (h < 24) return `${h} h ago`;
-  return new Date(iso).toLocaleDateString();
+  if (h < 24) return tp('time.hoursAgo', h);
+  return formatDate(iso);
 }
 
 /** One of the user's own generations: progress, result, share, save, remix. */
@@ -50,7 +52,7 @@ export default function JobDetailScreen() {
   if (!job) {
     return (
       <View style={[s.container, s.center]}>
-        {loading ? <ActivityIndicator /> : <Text style={s.muted}>This creation could not be found.</Text>}
+        {loading ? <ActivityIndicator /> : <Text style={s.muted}>{t('job.notFound')}</Text>}
       </View>
     );
   }
@@ -60,10 +62,10 @@ export default function JobDetailScreen() {
   const modelName = !effectId
     ? (model?.name ?? job.model_id)
     : sourceEffect?.section === 'app'
-      ? 'App'
+      ? t('effect.kindApp')
       : sourceEffect?.section === 'action'
-        ? 'Result tool'
-        : 'Trend template';
+        ? t('job.kindTool')
+        : t('effect.kindTemplate');
   const canRemix = sourceEffect?.section !== 'action';
 
   /** Upscale / Add sound: a new job whose input is this one's output. */
@@ -83,7 +85,7 @@ export default function JobDetailScreen() {
       router.push({ pathname: '/job/[id]', params: { id: newJob } });
     } catch (e) {
       if ((e as { code?: string }).code === 'insufficient_credits') router.push('/paywall');
-      else Alert.alert('Could not start', e instanceof Error ? e.message : String(e));
+      else Alert.alert(t('job.couldNotStart'), e instanceof Error ? e.message : String(e));
     } finally {
       setRunningAction(null);
     }
@@ -95,7 +97,7 @@ export default function JobDetailScreen() {
 
   async function share() {
     if (!url) return;
-    await Share.share({ message: `Made with Boson AI (${modelName}): "${job!.prompt}"\n${url}` });
+    await Share.share({ message: `${t('job.shareMessage', { model: modelName, prompt: job!.prompt })}\n${url}` });
   }
 
   return (
@@ -117,15 +119,15 @@ export default function JobDetailScreen() {
               <ActivityIndicator color={colors.accentInk} size="large" />
               <Text style={s.waiting}>
                 {job.kind === 'video'
-                  ? 'Rendering your video. This takes 1–5 minutes — we’ll notify you.'
-                  : 'Generating…'}
+                  ? t('job.renderingVideo')
+                  : t('job.generating')}
               </Text>
             </View>
           )}
           {job.status === 'failed' && (
             <View style={s.center}>
-              <Text style={s.error}>{job.error ?? 'Generation failed.'}</Text>
-              <Text style={s.waiting}>Your {job.cost} credits were refunded.</Text>
+              <Text style={s.error}>{t('job.failed')}</Text>
+              <Text style={s.waiting}>{tp('job.refunded', job.cost)}</Text>
             </View>
           )}
           {job.status === 'succeeded' && !url && <ActivityIndicator />}
@@ -137,7 +139,7 @@ export default function JobDetailScreen() {
 
         <ActionList>
           {job.status === 'succeeded' && url ? (
-            <ActionItem icon={<PublishIcon size={28} color={colors.text} strokeWidth={2.4} />} label="Share" onPress={share} />
+            <ActionItem icon={<PublishIcon size={28} color={colors.text} strokeWidth={2.4} />} label={t('job.share')} onPress={share} />
           ) : null}
           {job.status === 'succeeded' && url
             ? actions.map((a) => (
@@ -150,7 +152,7 @@ export default function JobDetailScreen() {
                       <Text style={s.actionGlyph}>{a.id === 'action-add-sound' ? '♪' : '✦'}</Text>
                     )
                   }
-                  label={`${a.title} · ${a.credits} ⚡`}
+                  label={`${fx.title(a)} · ${a.credits} ⚡`}
                   onPress={() => void runAction(a)}
                 />
               ))
@@ -158,18 +160,19 @@ export default function JobDetailScreen() {
           {canRemix ? (
             <ActionItem
               icon={<ScissorsIcon size={28} color={colors.text} strokeWidth={2.2} />}
-              label={job.status === 'failed' ? 'Try again' : 'Edit & Remix'}
+              label={job.status === 'failed' ? t('job.tryAgain') : t('job.remix')}
               onPress={remix}
             />
           ) : null}
+          {job.status === 'succeeded' ? <ReportAction targetType="job" targetId={job.id} /> : null}
         </ActionList>
 
         <PromptCard
-          label={effectId ? 'TEMPLATE' : 'YOUR PROMPT'}
+          label={effectId ? t('job.templateLabel') : t('job.promptLabel')}
           modelName={modelName}
           credits={job.cost}
           prompt={job.prompt}
-          cta="Generate another"
+          cta={t('job.generateAnother')}
           onCta={remix}
         />
 
@@ -187,14 +190,14 @@ function SaveButton({ job, url }: { job: Job; url: string }) {
     setSaving(true);
     try {
       const { status } = await requestPermissionsAsync(true, ['photo', 'video']);
-      if (status !== 'granted') throw new Error('Allow photo library access in Settings to save.');
+      if (status !== 'granted') throw new Error(t('job.allowPhotos'));
       const file = new File(Paths.cache, `${job.id}.${job.kind === 'video' ? 'mp4' : 'jpg'}`);
       if (!file.exists) await File.downloadFileAsync(url, file);
       await Asset.create(file.uri);
       void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      Alert.alert('Saved', 'Added to your photo library.');
+      Alert.alert(t('job.saved'), t('job.savedBody'));
     } catch (e) {
-      Alert.alert('Could not save', e instanceof Error ? e.message : String(e));
+      Alert.alert(t('job.couldNotSave'), e instanceof Error ? e.message : String(e));
     } finally {
       setSaving(false);
     }
@@ -202,7 +205,7 @@ function SaveButton({ job, url }: { job: Job; url: string }) {
 
   return (
     <Button
-      title="Save to Photos"
+      title={t('job.saveToPhotos')}
       variant="secondary"
       onPress={save}
       loading={saving}

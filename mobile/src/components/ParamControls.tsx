@@ -1,31 +1,35 @@
 import { Pressable, ScrollView, Switch, Text, TextInput, View } from 'react-native';
 import { Chip, SectionLabel } from '@/components/ui';
+import { t } from '@/i18n';
 import type { ParamSpec, ParamValues } from '@/lib/pricing';
 import { makeStyles, radius, space, useTheme } from '@/theme';
 
 const LABELS: Record<ParamSpec['kind'], string> = {
-  duration: 'Duration',
-  aspect_ratio: 'Aspect ratio',
-  image_size: 'Format',
-  resolution: 'Quality',
-  audio: 'Sound',
-  negative_prompt: 'Avoid (negative prompt)',
+  duration: 'params.duration',
+  aspect_ratio: 'params.aspectRatio',
+  image_size: 'params.format',
+  resolution: 'params.quality',
+  audio: 'params.sound',
+  negative_prompt: 'params.negative',
 };
 
 const IMAGE_SIZE_LABELS: Record<string, string> = {
-  auto: 'Auto',
-  square_hd: 'Square HD',
-  square: 'Square',
-  portrait_4_3: 'Portrait 3:4',
-  portrait_16_9: 'Portrait 9:16',
-  landscape_4_3: 'Landscape 4:3',
-  landscape_16_9: 'Landscape 16:9',
+  auto: 'params.auto',
+  square_hd: 'params.squareHd',
+  square: 'params.square',
+  portrait_4_3: 'params.portrait34',
+  portrait_16_9: 'params.portrait916',
+  landscape_4_3: 'params.landscape43',
+  landscape_16_9: 'params.landscape169',
 };
 
 function optionLabel(spec: ParamSpec, value: string | number): string {
-  if (spec.kind === 'duration') return value === 'auto' ? 'Auto' : `${value}s`;
-  if (spec.kind === 'image_size') return IMAGE_SIZE_LABELS[String(value)] ?? String(value);
-  if (value === 'auto' || value === 'adaptive') return 'Auto';
+  if (spec.kind === 'duration') return value === 'auto' ? t('params.auto') : t('params.seconds', { n: value });
+  if (spec.kind === 'image_size') {
+    const key = IMAGE_SIZE_LABELS[String(value)];
+    return key ? t(key) : String(value);
+  }
+  if (value === 'auto' || value === 'adaptive') return t('params.auto');
   return String(value);
 }
 
@@ -53,7 +57,7 @@ export function ParamControls({
               <BooleanRow spec={spec} value={value === true} onChange={(v) => onChange(spec.key, v)} />
             ) : (
               <>
-                <SectionLabel>{LABELS[spec.kind]}</SectionLabel>
+                <SectionLabel>{t(LABELS[spec.kind])}</SectionLabel>
                 {spec.type === 'enum' && (
                   <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.chips}>
                     {spec.options!.map((o) => (
@@ -79,7 +83,7 @@ export function ParamControls({
                   <TextInput
                     value={String(value)}
                     onChangeText={(t) => onChange(spec.key, t)}
-                    placeholder="e.g. blur, distortion, extra fingers"
+                    placeholder={t('params.negativePlaceholder')}
                     placeholderTextColor={colors.textMuted}
                     maxLength={500}
                     style={s.text}
@@ -104,7 +108,7 @@ function BooleanRow({ spec, value, onChange }: { spec: ParamSpec; value: boolean
   return (
     <View style={s.boolRow}>
       <View style={{ flex: 1 }}>
-        <Text style={s.boolLabel}>{LABELS[spec.kind]}</Text>
+        <Text style={s.boolLabel}>{t(LABELS[spec.kind])}</Text>
         {spec.kind === 'audio' && <Text style={s.boolHint}>Native audio and voices · costs more</Text>}
       </View>
       <Switch
@@ -135,7 +139,7 @@ function Stepper({
     <View style={s.stepper}>
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel="Decrease"
+        accessibilityLabel={t('params.decrease')}
         disabled={value <= min}
         onPress={() => onChange(Math.max(min, value - 1))}
         style={[s.stepBtn, value <= min && s.stepDisabled]}
@@ -148,7 +152,7 @@ function Stepper({
       </Text>
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel="Increase"
+        accessibilityLabel={t('params.increase')}
         disabled={value >= max}
         onPress={() => onChange(Math.min(max, value + 1))}
         style={[s.stepBtn, value >= max && s.stepDisabled]}

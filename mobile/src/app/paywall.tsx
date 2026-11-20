@@ -4,6 +4,7 @@ import RevenueCatUI from 'react-native-purchases-ui';
 import { Button } from '@/components/ui';
 import { purchasesAvailable } from '@/lib/purchases';
 import { makeStyles, space } from '@/theme';
+import { t } from '@/i18n';
 
 /**
  * The paywall layout and products are configured in the RevenueCat dashboard.
@@ -16,12 +17,9 @@ export default function PaywallScreen() {
   if (!purchasesAvailable()) {
     return (
       <View style={s.fallback}>
-        <Text style={s.title}>Purchases unavailable</Text>
-        <Text style={s.body}>
-          In-app purchases don't run in Expo Go. They need an iOS development build with
-          EXPO_PUBLIC_REVENUECAT_IOS_KEY set.
-        </Text>
-        <Button title="Close" variant="secondary" onPress={() => router.back()} />
+        <Text style={s.title}>{t('paywall.unavailable')}</Text>
+        <Text style={s.body}>{t('paywall.unavailableBody')}</Text>
+        <Button title={t('common.close')} variant="secondary" onPress={() => router.back()} />
       </View>
     );
   }

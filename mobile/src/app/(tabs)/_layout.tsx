@@ -1,4 +1,5 @@
 import { Tabs } from 'expo-router';
+import { t } from '@/i18n';
 
 /**
  * Web preview (UI work only): plain JS tabs. The phone app uses the native
@@ -10,7 +11,7 @@ export default function TabLayout() {
       <Tabs.Screen name="index" options={{ title: 'Explore' }} />
       <Tabs.Screen name="apps" options={{ title: 'Apps' }} />
       <Tabs.Screen name="create" options={{ title: 'Create' }} />
-      <Tabs.Screen name="gallery" options={{ title: 'Created by me' }} />
+      <Tabs.Screen name="gallery" options={{ title: t('tabs.mine') }} />
       <Tabs.Screen name="profile" options={{ title: 'Profile' }} />
     </Tabs>
   );

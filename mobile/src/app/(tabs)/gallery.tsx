@@ -9,12 +9,13 @@ import { Button, PageHeader, Segmented } from '@/components/ui';
 import { useJobs } from '@/hooks/useJobs';
 import { outputUrl, type Job } from '@/lib/api';
 import { makeStyles, radius, space, useTheme } from '@/theme';
+import { t, tp } from '@/i18n';
 
 type Filter = 'all' | 'video' | 'image';
 const FILTERS: { value: Filter; label: string }[] = [
-  { value: 'all', label: 'All' },
-  { value: 'video', label: 'Videos' },
-  { value: 'image', label: 'Images' },
+  { value: 'all', label: t('gallery.all') },
+  { value: 'video', label: t('gallery.videos') },
+  { value: 'image', label: t('gallery.images') },
 ];
 
 /** The user's own generations, newest first. */
@@ -51,8 +52,8 @@ export default function CreatedByMeScreen() {
         }
       >
         <PageHeader
-          title="My creations"
-          subtitle={jobs.length === 0 ? 'Your videos and images live here.' : jobs.length === 1 ? '1 creation' : `${jobs.length} creations`}
+          title={t('gallery.title')}
+          subtitle={jobs.length === 0 ? t('gallery.emptySubtitle') : tp('gallery.count', jobs.length)}
         />
 
         {jobs.length > 0 && <Segmented value={filter} options={FILTERS} onChange={setFilter} />}
@@ -61,9 +62,9 @@ export default function CreatedByMeScreen() {
           <ActivityIndicator style={{ marginTop: space.xl }} />
         ) : jobs.length === 0 ? (
           <View style={s.empty}>
-            <Text style={s.emptyText}>Nothing here yet.</Text>
+            <Text style={s.emptyText}>{t('gallery.empty')}</Text>
             <Button
-              title="Start creating"
+              title={t('gallery.start')}
               onPress={() => router.push('/')}
               style={{ alignSelf: 'stretch', height: 52 }}
             />
@@ -103,7 +104,7 @@ function JobTile({ job }: { job: Job }) {
       {thumb && <Image source={{ uri: thumb }} style={s.fill} contentFit="cover" transition={200} />}
       <View style={[s.fill, s.center]}>
         {job.status === 'queued' && <ActivityIndicator color={colors.text} />}
-        {job.status === 'failed' && <Text style={s.failed}>Failed · refunded</Text>}
+        {job.status === 'failed' && <Text style={s.failed}>{t('gallery.failed')}</Text>}
         {job.status === 'succeeded' && job.kind === 'video' && (
           <View style={s.play}>
             <PlayIcon size={18} color="#FFFFFF" />

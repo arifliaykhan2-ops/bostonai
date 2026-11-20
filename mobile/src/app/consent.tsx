@@ -2,7 +2,9 @@ import { router } from 'expo-router';
 import { ScrollView, Text, View } from 'react-native';
 import { Button } from '@/components/ui';
 import { setAiConsent } from '@/lib/consent';
+import { openLegal, PRIVACY_URL } from '@/lib/legal';
 import { makeStyles, space } from '@/theme';
+import { t } from '@/i18n';
 
 /**
  * App Store guideline 5.1.2(i) consent screen. Shown before the first
@@ -18,25 +20,20 @@ export default function ConsentScreen() {
 
   return (
     <ScrollView style={s.screen} contentContainerStyle={s.content}>
-      <Text style={s.title}>How your data is used</Text>
+      <Text style={s.title}>{t('consent.title')}</Text>
 
-      <Section heading="What we send">Your text prompts and any photos you choose to animate.</Section>
-      <Section heading="Who receives it">
-        fal.ai (our AI hosting provider) and the maker of the model you pick, such as Black Forest Labs (Flux),
-        Google (Nano Banana, Gemini), OpenAI (GPT Image), ByteDance (Seedance, Seedream), Kuaishou (Kling),
-        MiniMax, Alibaba (Wan), xAI (Grok), ShengShu (Vidu) and PixVerse. Trend templates send your photo to the
-        provider that runs that template.
-      </Section>
-      <Section heading="Why">
-        Only to generate the image or video you asked for. We don't sell your data or use it for advertising.
-      </Section>
-      <Section heading="Your choice">
-        You can withdraw consent at any time in Profile. Without it, generation is turned off.
-      </Section>
+      <Section heading={t('consent.whatHeading')}>{t('consent.what')}</Section>
+      <Section heading={t('consent.whoHeading')}>{t('consent.who')}</Section>
+      <Section heading={t('consent.whyHeading')}>{t('consent.why')}</Section>
+      <Section heading={t('consent.choiceHeading')}>{t('consent.choice')}</Section>
+
+      <Text style={s.link} onPress={() => openLegal(PRIVACY_URL)} accessibilityRole="link">
+        {t('legal.readPrivacy')}
+      </Text>
 
       <View style={s.actions}>
-        <Button title="I agree" onPress={agree} />
-        <Button title="Not now" variant="secondary" onPress={() => router.back()} />
+        <Button title={t('consent.agree')} onPress={agree} />
+        <Button title={t('consent.notNow')} variant="secondary" onPress={() => router.back()} />
       </View>
     </ScrollView>
   );
@@ -60,4 +57,5 @@ const useStyles = makeStyles((c) => ({
   heading: { color: c.text, fontSize: 16, fontWeight: '700' },
   body: { color: c.textMuted, fontSize: 15, lineHeight: 22 },
   actions: { gap: space.sm, marginTop: space.md },
+  link: { color: c.accent, fontSize: 15, fontWeight: '600', textDecorationLine: 'underline' },
 }));

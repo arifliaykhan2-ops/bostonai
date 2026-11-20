@@ -2,6 +2,7 @@
 // completes or refunds the job, and sends a push notification.
 // Signature check follows https://fal.ai/docs/model-apis/model-endpoints/webhooks
 import { admin, json } from '../_shared/http.ts';
+import { pushText, type PushKey } from '../_shared/push.ts';
 
 const JWKS_URL = 'https://rest.fal.ai/.well-known/jwks.json';
 const JWKS_TTL_MS = 12 * 60 * 60 * 1000; // fal says cache ≤ 24h
@@ -74,7 +75,7 @@ Deno.serve(async (req) => {
   if (event.status !== 'OK' || !resultUrl) {
     console.error('generation failed', jobId, event.error);
     await admin.rpc('fail_job', { p_job: job.id, p_error: 'Generation failed. Your credits were refunded.' });
-    await notify(job.user_id, 'Generation failed', 'Your credits were refunded.', job.id);
+    await notify(job.user_id, 'push.failed', 'push.refunded', job.id);
     return json({ ok: true });
   }
 
@@ -91,7 +92,7 @@ Deno.serve(async (req) => {
     if (error) throw error;
 
     await admin.rpc('complete_job', { p_job: job.id, p_output_path: path });
-    await notify(job.user_id, job.kind === 'video' ? 'Your video is ready 🎬' : 'Your image is ready ✨', 'Tap to view it.', job.id);
+    await notify(job.user_id, job.kind === 'video' ? 'push.videoReady' : 'push.imageReady', 'push.tapToView', job.id);
   } catch (e) {
     console.error('store output failed', jobId, e);
     await admin.rpc('fail_job', { p_job: job.id, p_error: 'Could not save the result. Your credits were refunded.' });
@@ -100,9 +101,12 @@ Deno.serve(async (req) => {
   return json({ ok: true });
 });
 
-async function notify(userId: string, title: string, body: string, jobId: string) {
-  const { data } = await admin.from('profiles').select('push_token').eq('id', userId).single();
+/** Sends a push in the user's app language (profiles.locale, set by the app with the push token). */
+async function notify(userId: string, titleKey: PushKey, bodyKey: PushKey, jobId: string) {
+  const { data } = await admin.from('profiles').select('push_token, locale').eq('id', userId).single();
   if (!data?.push_token) return;
+  const title = pushText(data.locale, titleKey);
+  const body = pushText(data.locale, bodyKey);
   await fetch('https://exp.host/--/api/v2/push/send', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

@@ -1,0 +1,5 @@
+{
+  "CFBundleDisplayName": "Boson AI",
+  "NSPhotoLibraryUsageDescription": "Boson AI 會使用你的照片，讓你將照片製作成影片。",
+  "NSPhotoLibraryAddUsageDescription": "Boson AI 會將你產生的圖片和影片儲存到照片圖庫。"
+}

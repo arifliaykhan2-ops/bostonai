@@ -5,6 +5,8 @@ import { PRESETS } from '../_shared/catalog.ts';
 import { buildEffectInput, EFFECT_COLUMNS, effectCost, resolveChoices, type EffectRow } from '../_shared/effects.ts';
 import { buildFalInput, type InputMap } from '../_shared/falSchema.ts';
 import { admin, corsHeaders, json, requireUser, SUPABASE_URL } from '../_shared/http.ts';
+import { checkLimits } from '../_shared/limits.ts';
+import { moderateText } from '../_shared/moderation.ts';
 import {
   quoteCredits,
   validateParams,
@@ -55,6 +57,10 @@ Deno.serve(async (req) => {
   if (!user) return json({ error: 'unauthorized' }, 401);
 
   const body = (await req.json().catch(() => ({}))) as Body;
+
+  const limit = await checkLimits(user.id);
+  if (!limit.ok) return json({ error: limit.error }, 429);
+
   if (body.effectId) return runEffect(user.id, body);
   const prompt = body.prompt?.trim() ?? '';
 
@@ -91,7 +97,8 @@ Deno.serve(async (req) => {
   // The server re-prices from the same formula the app shows (supabase/functions/_shared/pricing.ts).
   const cost = quoteCredits(model.pricing, model.params, params);
 
-  // TODO before launch: per-user rate limit and a prompt moderation pass.
+  const verdict = await moderateText(prompt);
+  if (!verdict.allowed) return json({ error: 'prompt_blocked', detail: verdict.category }, 400);
 
   const firstPath = Object.values(images)[0] ?? null;
   const { data: jobId, error: jobError } = await admin.rpc('create_job', {
@@ -200,6 +207,8 @@ async function runEffect(userId: string, body: Body) {
   const text = (body.text ?? '').trim();
   if (effect.text_input) {
     if (text.length < 2 || text.length > effect.text_input.max) return json({ error: 'invalid_prompt' }, 400);
+    const verdict = await moderateText(text);
+    if (!verdict.allowed) return json({ error: 'prompt_blocked', detail: verdict.category }, 400);
   }
   if ((effect.requires_consent || effect.text_input?.consent) && body.consentSelf !== true) {
     return json({ error: 'consent_required' }, 400);

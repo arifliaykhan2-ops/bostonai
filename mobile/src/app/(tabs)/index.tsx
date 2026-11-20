@@ -19,6 +19,7 @@ import { PageHeader } from '@/components/ui';
 import { EffectTile } from '@/components/EffectTile';
 import { effectAspect, useEffects, type Effect } from '@/lib/effects';
 import { makeStyles, space } from '@/theme';
+import { t } from '@/i18n';
 
 const COLUMNS = 2;
 
@@ -138,13 +139,13 @@ export default function HomeScreen() {
         ]}
         showsVerticalScrollIndicator={false}
       >
-        <PageHeader title="Trends" subtitle="Pick a video, add your photo — you’re in it." />
+        <PageHeader title={t('trends.title')} subtitle={t('trends.subtitle')} />
 
         {loading ? (
           <ActivityIndicator style={{ marginTop: space.xl }} />
         ) : error && !effects.length ? (
           <Pressable onPress={() => void reload()} accessibilityRole="button">
-            <Text style={s.empty}>Couldn't load templates. Tap to retry.</Text>
+            <Text style={s.empty}>{t('trends.loadError')}</Text>
           </Pressable>
         ) : (
           <View style={s.feed} onLayout={(e) => (gridTop.current = e.nativeEvent.layout.y)}>

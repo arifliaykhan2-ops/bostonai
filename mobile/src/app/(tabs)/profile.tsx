@@ -1,13 +1,15 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Alert, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Linking, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Purchases from 'react-native-purchases';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ScreenBackground } from '@/components/ScreenBackground';
 import { Button, PageHeader } from '@/components/ui';
 import { useCredits } from '@/hooks/useCredits';
 import { deleteAccount } from '@/lib/api';
+import { isRTL, t } from '@/i18n';
 import { hasAiConsent, setAiConsent } from '@/lib/consent';
+import { openLegal, PRIVACY_URL, SUPPORT_EMAIL, TERMS_URL } from '@/lib/legal';
 import { purchasesAvailable } from '@/lib/purchases';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/providers/auth';
@@ -26,9 +28,9 @@ export default function ProfileScreen() {
     if (!purchasesAvailable()) return;
     try {
       await Purchases.restorePurchases();
-      Alert.alert('Restored', 'Your purchases have been restored.');
+      Alert.alert(t('profile.restored'), t('profile.restoredBody'));
     } catch (e) {
-      Alert.alert('Restore failed', e instanceof Error ? e.message : String(e));
+      Alert.alert(t('profile.restoreFailed'), e instanceof Error ? e.message : String(e));
     }
   }
 
@@ -43,7 +45,7 @@ export default function ProfileScreen() {
       try {
         await deleteAccount();
       } catch (e) {
-        Alert.alert('Could not delete account', e instanceof Error ? e.message : String(e));
+        Alert.alert(t('profile.couldNotDelete'), e instanceof Error ? e.message : String(e));
       } finally {
         setDeleting(false);
       }
@@ -53,11 +55,11 @@ export default function ProfileScreen() {
       return;
     }
     Alert.alert(
-      'Delete account?',
-      'This permanently deletes your account, generations and remaining credits. This cannot be undone.',
+      t('profile.deleteTitle'),
+      t('profile.deleteBody'),
       [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Delete', style: 'destructive', onPress: () => void run() },
+        { text: t('common.cancel'), style: 'cancel' },
+        { text: t('common.delete'), style: 'destructive', onPress: () => void run() },
       ],
     );
   }
@@ -78,30 +80,36 @@ export default function ProfileScreen() {
         showsVerticalScrollIndicator={false}
       >
         <PageHeader
-          title="Profile"
-          subtitle={isGuest ? 'Guest · not signed in' : (session?.user.email ?? 'Signed in with Apple')}
+          title={t('profile.title')}
+          subtitle={isGuest ? t('profile.guest') : (session?.user.email ?? t('profile.signedInApple'))}
         />
 
         <View style={s.creditsCard}>
           <View>
             <Text style={s.creditsValue}>{credits ?? '–'}</Text>
-            <Text style={s.creditsLabel}>credits</Text>
+            <Text style={s.creditsLabel}>{t('profile.creditsLabel')}</Text>
           </View>
-          <Button title="⚡ Get more" onPress={() => router.push('/paywall')} style={s.getMore} />
+          <Button title={`⚡ ${t('profile.getMore')}`} onPress={() => router.push('/paywall')} style={s.getMore} />
         </View>
 
         <View style={s.group}>
-          <Row label="Restore purchases" onPress={restore} />
+          <Row label={t('profile.restore')} onPress={restore} />
           <Row
-            label="AI data consent"
-            value={consent ? 'On' : 'Off'}
+            label={t('profile.consent')}
+            value={consent ? t('common.on') : t('common.off')}
             onPress={consent ? revokeConsent : () => router.push('/consent')}
           />
-          <Row label="Sign out" onPress={() => void supabase.auth.signOut()} last />
+          <Row label={t('profile.signOut')} onPress={() => void supabase.auth.signOut()} last />
+        </View>
+
+        <View style={s.group}>
+          <Row label={t('legal.privacy')} onPress={() => openLegal(PRIVACY_URL)} />
+          <Row label={t('legal.terms')} onPress={() => openLegal(TERMS_URL)} />
+          <Row label={t('profile.support')} onPress={() => void Linking.openURL(`mailto:${SUPPORT_EMAIL}`)} last />
         </View>
 
         <Pressable onPress={confirmDelete} disabled={deleting} accessibilityRole="button" style={s.deleteRow}>
-          <Text style={s.deleteText}>{deleting ? 'Deleting…' : 'Delete account'}</Text>
+          <Text style={s.deleteText}>{deleting ? t('profile.deleting') : t('profile.deleteAccount')}</Text>
         </Pressable>
       </ScrollView>
     </View>
@@ -120,7 +128,7 @@ function Row({ label, value, onPress, last }: { label: string; value?: string; o
       <Text style={s.rowLabel}>{label}</Text>
       <View style={s.rowRight}>
         {value ? <Text style={s.rowValue}>{value}</Text> : null}
-        <Text style={s.chevron}>›</Text>
+        <Text style={s.chevron}>{isRTL ? '‹' : '›'}</Text>
       </View>
     </Pressable>
   );

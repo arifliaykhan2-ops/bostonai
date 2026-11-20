@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState, useSyncExternalStore } from 'react';
 import { supabase } from './supabase';
+import { t } from '@/i18n';
 
 /**
  * Endless Explore feed: trending PG community creations from Civitai with their
@@ -68,7 +69,7 @@ async function loadPage(filter: FeedFilter) {
 
   const prev = stateOf(filter);
   if (error || !data) {
-    feeds.set(filter, { ...prev, loading: false, error: error?.message ?? 'Could not load the feed' });
+    feeds.set(filter, { ...prev, loading: false, error: error?.message ?? t('showcase.feedError') });
   } else {
     const known = new Set(prev.items.map((i) => i.id));
     const fresh = data.items.filter((i) => !known.has(i.id));
