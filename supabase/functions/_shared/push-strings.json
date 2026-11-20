@@ -1,0 +1,331 @@
+{
+  "en": {
+    "push.videoReady": "Your video is ready 🎬",
+    "push.imageReady": "Your image is ready ✨",
+    "push.tapToView": "Tap to view it.",
+    "push.failed": "Generation failed",
+    "push.refunded": "Your credits were refunded."
+  },
+  "ar": {
+    "push.videoReady": "الفيديو جاهز 🎬",
+    "push.imageReady": "الصورة جاهزة ✨",
+    "push.tapToView": "اضغط للعرض.",
+    "push.failed": "فشل الإنشاء",
+    "push.refunded": "تم استرداد رصيدك."
+  },
+  "bn": {
+    "push.videoReady": "আপনার ভিডিও তৈরি 🎬",
+    "push.imageReady": "আপনার ছবি তৈরি ✨",
+    "push.tapToView": "দেখতে ট্যাপ করুন।",
+    "push.failed": "তৈরি করা যায়নি",
+    "push.refunded": "আপনার ক্রেডিট ফেরত দেওয়া হয়েছে।"
+  },
+  "ca": {
+    "push.videoReady": "El teu vídeo ja és a punt 🎬",
+    "push.imageReady": "La teva imatge ja és a punt ✨",
+    "push.tapToView": "Toca per veure-la.",
+    "push.failed": "No s'ha pogut crear",
+    "push.refunded": "Se t'han reemborsat els crèdits."
+  },
+  "cs": {
+    "push.videoReady": "Vaše video je hotové 🎬",
+    "push.imageReady": "Váš obrázek je hotový ✨",
+    "push.tapToView": "Klepnutím zobrazíte.",
+    "push.failed": "Vytvoření se nezdařilo",
+    "push.refunded": "Kredity vám byly vráceny."
+  },
+  "da": {
+    "push.videoReady": "Din video er klar 🎬",
+    "push.imageReady": "Dit billede er klar ✨",
+    "push.tapToView": "Tryk for at se det.",
+    "push.failed": "Det mislykkedes",
+    "push.refunded": "Dine kreditter er refunderet."
+  },
+  "de": {
+    "push.videoReady": "Dein Video ist fertig 🎬",
+    "push.imageReady": "Dein Bild ist fertig ✨",
+    "push.tapToView": "Tippe, um es anzusehen.",
+    "push.failed": "Erstellung fehlgeschlagen",
+    "push.refunded": "Deine Credits wurden erstattet."
+  },
+  "el": {
+    "push.videoReady": "Το βίντεό σου είναι έτοιμο 🎬",
+    "push.imageReady": "Η εικόνα σου είναι έτοιμη ✨",
+    "push.tapToView": "Πάτησε για προβολή.",
+    "push.failed": "Η δημιουργία απέτυχε",
+    "push.refunded": "Οι μονάδες σου επιστράφηκαν."
+  },
+  "es-MX": {
+    "push.videoReady": "Tu video está listo 🎬",
+    "push.imageReady": "Tu imagen está lista ✨",
+    "push.tapToView": "Toca para verla.",
+    "push.failed": "No se pudo crear",
+    "push.refunded": "Se te reembolsaron los créditos."
+  },
+  "es": {
+    "push.videoReady": "Tu video está listo 🎬",
+    "push.imageReady": "Tu imagen está lista ✨",
+    "push.tapToView": "Toca para verla.",
+    "push.failed": "No se pudo crear",
+    "push.refunded": "Se te reembolsaron los créditos."
+  },
+  "fi": {
+    "push.videoReady": "Videosi on valmis 🎬",
+    "push.imageReady": "Kuvasi on valmis ✨",
+    "push.tapToView": "Napauta nähdäksesi.",
+    "push.failed": "Luonti epäonnistui",
+    "push.refunded": "Krediittisi hyvitettiin."
+  },
+  "fr-CA": {
+    "push.videoReady": "Votre vidéo est prête 🎬",
+    "push.imageReady": "Votre image est prête ✨",
+    "push.tapToView": "Touchez pour la voir.",
+    "push.failed": "Échec de la création",
+    "push.refunded": "Vos crédits ont été remboursés."
+  },
+  "fr": {
+    "push.videoReady": "Votre vidéo est prête 🎬",
+    "push.imageReady": "Votre image est prête ✨",
+    "push.tapToView": "Touchez pour la voir.",
+    "push.failed": "Échec de la création",
+    "push.refunded": "Vos crédits ont été remboursés."
+  },
+  "gu": {
+    "push.videoReady": "તમારો વીડિયો તૈયાર છે 🎬",
+    "push.imageReady": "તમારી છબી તૈયાર છે ✨",
+    "push.tapToView": "જોવા માટે ટૅપ કરો.",
+    "push.failed": "બનાવવામાં નિષ્ફળ",
+    "push.refunded": "તમારી ક્રેડિટ પરત કરી."
+  },
+  "he": {
+    "push.videoReady": "הסרטון שלך מוכן 🎬",
+    "push.imageReady": "התמונה שלך מוכנה ✨",
+    "push.tapToView": "הקישו לצפייה.",
+    "push.failed": "היצירה נכשלה",
+    "push.refunded": "הקרדיטים שלך זוכו."
+  },
+  "hi": {
+    "push.videoReady": "आपका वीडियो तैयार है 🎬",
+    "push.imageReady": "आपकी इमेज तैयार है ✨",
+    "push.tapToView": "देखने के लिए टैप करें।",
+    "push.failed": "बनाना विफल रहा",
+    "push.refunded": "आपके क्रेडिट वापस कर दिए गए।"
+  },
+  "hr": {
+    "push.videoReady": "Tvoj videozapis je spreman 🎬",
+    "push.imageReady": "Tvoja slika je spremna ✨",
+    "push.tapToView": "Dodirni za pregled.",
+    "push.failed": "Izrada nije uspjela",
+    "push.refunded": "Krediti su ti vraćeni."
+  },
+  "hu": {
+    "push.videoReady": "Elkészült a videód 🎬",
+    "push.imageReady": "Elkészült a képed ✨",
+    "push.tapToView": "Koppints a megtekintéshez.",
+    "push.failed": "Nem sikerült elkészíteni",
+    "push.refunded": "A kreditjeidet visszakaptad."
+  },
+  "id": {
+    "push.videoReady": "Video Anda sudah siap 🎬",
+    "push.imageReady": "Gambar Anda sudah siap ✨",
+    "push.tapToView": "Ketuk untuk melihat.",
+    "push.failed": "Gagal membuat",
+    "push.refunded": "Kredit Anda telah dikembalikan."
+  },
+  "it": {
+    "push.videoReady": "Il tuo video è pronto 🎬",
+    "push.imageReady": "La tua immagine è pronta ✨",
+    "push.tapToView": "Tocca per vederla.",
+    "push.failed": "Creazione non riuscita",
+    "push.refunded": "I tuoi crediti sono stati rimborsati."
+  },
+  "ja": {
+    "push.videoReady": "動画ができました 🎬",
+    "push.imageReady": "画像ができました ✨",
+    "push.tapToView": "タップして表示。",
+    "push.failed": "生成に失敗しました",
+    "push.refunded": "クレジットは返金されました。"
+  },
+  "kn": {
+    "push.videoReady": "ನಿಮ್ಮ ವೀಡಿಯೊ ಸಿದ್ಧವಾಗಿದೆ 🎬",
+    "push.imageReady": "ನಿಮ್ಮ ಚಿತ್ರ ಸಿದ್ಧವಾಗಿದೆ ✨",
+    "push.tapToView": "ನೋಡಲು ಟ್ಯಾಪ್ ಮಾಡಿ.",
+    "push.failed": "ರಚನೆ ವಿಫಲವಾಗಿದೆ",
+    "push.refunded": "ನಿಮ್ಮ ಕ್ರೆಡಿಟ್‌ಗಳನ್ನು ಮರಳಿಸಲಾಗಿದೆ."
+  },
+  "ko": {
+    "push.videoReady": "영상이 완성됐어요 🎬",
+    "push.imageReady": "이미지가 완성됐어요 ✨",
+    "push.tapToView": "탭해서 확인하세요.",
+    "push.failed": "생성 실패",
+    "push.refunded": "크레딧이 환불되었어요."
+  },
+  "ml": {
+    "push.videoReady": "നിങ്ങളുടെ വീഡിയോ തയ്യാർ 🎬",
+    "push.imageReady": "നിങ്ങളുടെ ചിത്രം തയ്യാർ ✨",
+    "push.tapToView": "കാണാൻ ടാപ്പ് ചെയ്യുക.",
+    "push.failed": "സൃഷ്ടിക്കാനായില്ല",
+    "push.refunded": "നിങ്ങളുടെ ക്രെഡിറ്റുകൾ തിരികെ നൽകി."
+  },
+  "mr": {
+    "push.videoReady": "तुमचा व्हिडिओ तयार आहे 🎬",
+    "push.imageReady": "तुमची इमेज तयार आहे ✨",
+    "push.tapToView": "पाहण्यासाठी टॅप करा.",
+    "push.failed": "तयार करता आले नाही",
+    "push.refunded": "तुमचे क्रेडिट्स परत केले."
+  },
+  "ms": {
+    "push.videoReady": "Video anda sudah siap 🎬",
+    "push.imageReady": "Imej anda sudah siap ✨",
+    "push.tapToView": "Ketik untuk melihat.",
+    "push.failed": "Gagal membuat",
+    "push.refunded": "Kredit anda telah dikembalikan."
+  },
+  "nb": {
+    "push.videoReady": "Videoen din er klar 🎬",
+    "push.imageReady": "Bildet ditt er klart ✨",
+    "push.tapToView": "Trykk for å se.",
+    "push.failed": "Det mislyktes",
+    "push.refunded": "Kredittene dine er refundert."
+  },
+  "nl": {
+    "push.videoReady": "Je video is klaar 🎬",
+    "push.imageReady": "Je afbeelding is klaar ✨",
+    "push.tapToView": "Tik om te bekijken.",
+    "push.failed": "Maken mislukt",
+    "push.refunded": "Je credits zijn terugbetaald."
+  },
+  "or": {
+    "push.videoReady": "ଆପଣଙ୍କ ଭିଡିଓ ପ୍ରସ୍ତୁତ 🎬",
+    "push.imageReady": "ଆପଣଙ୍କ ଛବି ପ୍ରସ୍ତୁତ ✨",
+    "push.tapToView": "ଦେଖିବାକୁ ଟ୍ୟାପ କରନ୍ତୁ।",
+    "push.failed": "ତିଆରି ବିଫଳ ହେଲା",
+    "push.refunded": "ଆପଣଙ୍କ କ୍ରେଡିଟ ଫେରସ୍ତ ହେଲା।"
+  },
+  "pa": {
+    "push.videoReady": "ਤੁਹਾਡੀ ਵੀਡੀਓ ਤਿਆਰ ਹੈ 🎬",
+    "push.imageReady": "ਤੁਹਾਡੀ ਤਸਵੀਰ ਤਿਆਰ ਹੈ ✨",
+    "push.tapToView": "ਵੇਖਣ ਲਈ ਟੈਪ ਕਰੋ।",
+    "push.failed": "ਬਣਾਉਣਾ ਅਸਫਲ ਰਿਹਾ",
+    "push.refunded": "ਤੁਹਾਡੇ ਕ੍ਰੈਡਿਟ ਵਾਪਸ ਕਰ ਦਿੱਤੇ ਗਏ।"
+  },
+  "pl": {
+    "push.videoReady": "Twój film jest gotowy 🎬",
+    "push.imageReady": "Twój obraz jest gotowy ✨",
+    "push.tapToView": "Stuknij, aby zobaczyć.",
+    "push.failed": "Nie udało się utworzyć",
+    "push.refunded": "Twoje kredyty zostały zwrócone."
+  },
+  "pt-BR": {
+    "push.videoReady": "Seu vídeo está pronto 🎬",
+    "push.imageReady": "Sua imagem está pronta ✨",
+    "push.tapToView": "Toque para ver.",
+    "push.failed": "Falha na criação",
+    "push.refunded": "Seus créditos foram reembolsados."
+  },
+  "pt-PT": {
+    "push.videoReady": "O seu vídeo está pronto 🎬",
+    "push.imageReady": "A sua imagem está pronta ✨",
+    "push.tapToView": "Toque para ver.",
+    "push.failed": "Falha na criação",
+    "push.refunded": "Os seus créditos foram reembolsados."
+  },
+  "ro": {
+    "push.videoReady": "Videoclipul tău e gata 🎬",
+    "push.imageReady": "Imaginea ta e gata ✨",
+    "push.tapToView": "Atinge pentru a vedea.",
+    "push.failed": "Crearea a eșuat",
+    "push.refunded": "Creditele tale au fost rambursate."
+  },
+  "ru": {
+    "push.videoReady": "Ваше видео готово 🎬",
+    "push.imageReady": "Ваше изображение готово ✨",
+    "push.tapToView": "Нажмите, чтобы посмотреть.",
+    "push.failed": "Не удалось создать",
+    "push.refunded": "Ваши кредиты возвращены."
+  },
+  "sk": {
+    "push.videoReady": "Vaše video je hotové 🎬",
+    "push.imageReady": "Váš obrázok je hotový ✨",
+    "push.tapToView": "Klepnutím zobrazíte.",
+    "push.failed": "Vytvorenie zlyhalo",
+    "push.refunded": "Kredity vám boli vrátené."
+  },
+  "sl": {
+    "push.videoReady": "Tvoj videoposnetek je pripravljen 🎬",
+    "push.imageReady": "Tvoja slika je pripravljena ✨",
+    "push.tapToView": "Tapni za ogled.",
+    "push.failed": "Ustvarjanje ni uspelo",
+    "push.refunded": "Krediti so ti bili vrnjeni."
+  },
+  "sv": {
+    "push.videoReady": "Din video är klar 🎬",
+    "push.imageReady": "Din bild är klar ✨",
+    "push.tapToView": "Tryck för att visa.",
+    "push.failed": "Det gick inte att skapa",
+    "push.refunded": "Dina krediter har återbetalats."
+  },
+  "ta": {
+    "push.videoReady": "உங்கள் வீடியோ தயார் 🎬",
+    "push.imageReady": "உங்கள் படம் தயார் ✨",
+    "push.tapToView": "பார்க்கத் தட்டவும்.",
+    "push.failed": "உருவாக்க முடியவில்லை",
+    "push.refunded": "உங்கள் கிரெடிட்கள் திருப்பித் தரப்பட்டன."
+  },
+  "te": {
+    "push.videoReady": "మీ వీడియో సిద్ధంగా ఉంది 🎬",
+    "push.imageReady": "మీ చిత్రం సిద్ధంగా ఉంది ✨",
+    "push.tapToView": "చూడటానికి ట్యాప్ చేయండి.",
+    "push.failed": "సృష్టించడం విఫలమైంది",
+    "push.refunded": "మీ క్రెడిట్‌లు తిరిగి ఇవ్వబడ్డాయి."
+  },
+  "th": {
+    "push.videoReady": "วิดีโอของคุณพร้อมแล้ว 🎬",
+    "push.imageReady": "ภาพของคุณพร้อมแล้ว ✨",
+    "push.tapToView": "แตะเพื่อดู",
+    "push.failed": "สร้างไม่สำเร็จ",
+    "push.refunded": "คืนเครดิตให้คุณแล้ว"
+  },
+  "tr": {
+    "push.videoReady": "Videon hazır 🎬",
+    "push.imageReady": "Görselin hazır ✨",
+    "push.tapToView": "Görmek için dokun.",
+    "push.failed": "Oluşturma başarısız",
+    "push.refunded": "Kredilerin iade edildi."
+  },
+  "uk": {
+    "push.videoReady": "Ваше відео готове 🎬",
+    "push.imageReady": "Ваше зображення готове ✨",
+    "push.tapToView": "Торкніться, щоб переглянути.",
+    "push.failed": "Не вдалося створити",
+    "push.refunded": "Ваші кредити повернуто."
+  },
+  "ur": {
+    "push.videoReady": "آپ کی ویڈیو تیار ہے 🎬",
+    "push.imageReady": "آپ کی تصویر تیار ہے ✨",
+    "push.tapToView": "دیکھنے کے لیے ٹیپ کریں۔",
+    "push.failed": "بنانا ناکام رہا",
+    "push.refunded": "آپ کے کریڈٹس واپس کر دیے گئے۔"
+  },
+  "vi": {
+    "push.videoReady": "Video của bạn đã sẵn sàng 🎬",
+    "push.imageReady": "Ảnh của bạn đã sẵn sàng ✨",
+    "push.tapToView": "Chạm để xem.",
+    "push.failed": "Tạo không thành công",
+    "push.refunded": "Tín dụng của bạn đã được hoàn lại."
+  },
+  "zh-Hans": {
+    "push.videoReady": "你的视频已生成 🎬",
+    "push.imageReady": "你的图片已生成 ✨",
+    "push.tapToView": "轻点查看。",
+    "push.failed": "生成失败",
+    "push.refunded": "积分已退还。"
+  },
+  "zh-Hant": {
+    "push.videoReady": "你的影片已完成 🎬",
+    "push.imageReady": "你的圖片已完成 ✨",
+    "push.tapToView": "點一下即可查看。",
+    "push.failed": "產生失敗",
+    "push.refunded": "點數已退還。"
+  }
+}

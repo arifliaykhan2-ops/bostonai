@@ -38,7 +38,9 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "Boson AI uses your photos so you can animate them into videos."
+          "photosPermission": "Boson AI uses your photos so you can animate them into videos.",
+          "cameraPermission": false,
+          "microphonePermission": false
         }
       ],
       [
@@ -47,10 +49,125 @@
           "savePhotosPermission": "Boson AI saves your generated images and videos to your library."
         }
       ],
-      "expo-font"
+      "expo-font",
+      [
+        "expo-localization",
+        {
+          "supportsRTL": true,
+          "supportedLocales": {
+            "ios": [
+              "en",
+              "ar",
+              "bn",
+              "ca",
+              "cs",
+              "da",
+              "de",
+              "el",
+              "es",
+              "es-MX",
+              "fi",
+              "fr",
+              "fr-CA",
+              "gu",
+              "he",
+              "hi",
+              "hr",
+              "hu",
+              "id",
+              "it",
+              "ja",
+              "kn",
+              "ko",
+              "ml",
+              "mr",
+              "ms",
+              "nb",
+              "nl",
+              "or",
+              "pa",
+              "pl",
+              "pt-BR",
+              "pt-PT",
+              "ro",
+              "ru",
+              "sk",
+              "sl",
+              "sv",
+              "ta",
+              "te",
+              "th",
+              "tr",
+              "uk",
+              "ur",
+              "vi",
+              "zh-Hans",
+              "zh-Hant"
+            ]
+          }
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 140,
+          "resizeMode": "contain",
+          "backgroundColor": "#0B0B0C"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "locales": {
+      "en": "./src/i18n/native/en.json",
+      "ar": "./src/i18n/native/ar.json",
+      "bn": "./src/i18n/native/bn.json",
+      "ca": "./src/i18n/native/ca.json",
+      "cs": "./src/i18n/native/cs.json",
+      "da": "./src/i18n/native/da.json",
+      "de": "./src/i18n/native/de.json",
+      "el": "./src/i18n/native/el.json",
+      "es": "./src/i18n/native/es.json",
+      "es-MX": "./src/i18n/native/es-MX.json",
+      "fi": "./src/i18n/native/fi.json",
+      "fr": "./src/i18n/native/fr.json",
+      "fr-CA": "./src/i18n/native/fr-CA.json",
+      "gu": "./src/i18n/native/gu.json",
+      "he": "./src/i18n/native/he.json",
+      "hi": "./src/i18n/native/hi.json",
+      "hr": "./src/i18n/native/hr.json",
+      "hu": "./src/i18n/native/hu.json",
+      "id": "./src/i18n/native/id.json",
+      "it": "./src/i18n/native/it.json",
+      "ja": "./src/i18n/native/ja.json",
+      "kn": "./src/i18n/native/kn.json",
+      "ko": "./src/i18n/native/ko.json",
+      "ml": "./src/i18n/native/ml.json",
+      "mr": "./src/i18n/native/mr.json",
+      "ms": "./src/i18n/native/ms.json",
+      "nb": "./src/i18n/native/nb.json",
+      "nl": "./src/i18n/native/nl.json",
+      "or": "./src/i18n/native/or.json",
+      "pa": "./src/i18n/native/pa.json",
+      "pl": "./src/i18n/native/pl.json",
+      "pt-BR": "./src/i18n/native/pt-BR.json",
+      "pt-PT": "./src/i18n/native/pt-PT.json",
+      "ro": "./src/i18n/native/ro.json",
+      "ru": "./src/i18n/native/ru.json",
+      "sk": "./src/i18n/native/sk.json",
+      "sl": "./src/i18n/native/sl.json",
+      "sv": "./src/i18n/native/sv.json",
+      "ta": "./src/i18n/native/ta.json",
+      "te": "./src/i18n/native/te.json",
+      "th": "./src/i18n/native/th.json",
+      "tr": "./src/i18n/native/tr.json",
+      "uk": "./src/i18n/native/uk.json",
+      "ur": "./src/i18n/native/ur.json",
+      "vi": "./src/i18n/native/vi.json",
+      "zh-Hans": "./src/i18n/native/zh-Hans.json",
+      "zh-Hant": "./src/i18n/native/zh-Hant.json"
     }
   }
 }

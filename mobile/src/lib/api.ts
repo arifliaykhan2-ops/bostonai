@@ -1,3 +1,6 @@
+import * as AppleAuthentication from 'expo-apple-authentication';
+import { Platform } from 'react-native';
+import { t } from '@/i18n';
 import type { ParamValues } from './pricing';
 import { supabase } from './supabase';
 
@@ -111,18 +114,23 @@ export async function runJobAction(effectId: string, sourceJobId: string): Promi
   return data.jobId;
 }
 
-const ERROR_MESSAGES: Record<string, string> = {
-  unknown_effect: 'This template is no longer available.',
-  unknown_job: 'This creation can’t be used for that.',
-  consent_required: 'Confirm that this is you or that you have permission.',
-  video_required: 'Choose a video first.',
-  insufficient_credits: 'Not enough credits.',
-  provider_error: 'The AI provider rejected the request. Your credits were refunded.',
-  image_required: 'Choose a photo first.',
-  invalid_params: 'One of the options is not supported by this model.',
-  invalid_prompt: 'Write a slightly longer prompt.',
-  unauthorized: 'Your session expired. Restart the app.',
-};
+/** Server error codes with a translated message (keys errors.<code>). */
+const KNOWN_ERRORS = new Set([
+  'unknown_effect',
+  'unknown_job',
+  'consent_required',
+  'video_required',
+  'insufficient_credits',
+  'provider_error',
+  'image_required',
+  'invalid_params',
+  'invalid_prompt',
+  'unauthorized',
+  'prompt_blocked',
+  'too_many_running',
+  'apple_reauth_required',
+  'rate_limited',
+]);
 
 /** Turns a FunctionsHttpError into an Error carrying the server's error code. */
 async function toFriendlyError(error: unknown): Promise<Error & { code?: string }> {
@@ -134,7 +142,7 @@ async function toFriendlyError(error: unknown): Promise<Error & { code?: string 
     code = body?.error;
     detail = body?.detail;
   }
-  const message = (code && ERROR_MESSAGES[code]) ?? (error instanceof Error ? error.message : String(error));
+  const message = code && KNOWN_ERRORS.has(code) ? t(`errors.${code}`) : error instanceof Error ? error.message : String(error);
   if (detail) console.warn('generate failed:', detail);
   return Object.assign(new Error(message), { code });
 }
@@ -146,8 +154,31 @@ export async function outputUrl(path: string): Promise<string> {
   return data.signedUrl;
 }
 
+/**
+ * Deletes the account. If the user signed in with Apple, they confirm with Apple
+ * once more so the server can revoke the app's Apple sign-in (App Store requirement).
+ */
 export async function deleteAccount(): Promise<void> {
-  const { error } = await supabase.functions.invoke('delete-account', { method: 'POST' });
-  if (error) throw error;
+  const { data: auth } = await supabase.auth.getUser();
+  const usesApple = (auth.user?.identities ?? []).some((i) => i.provider === 'apple');
+
+  let appleAuthorizationCode: string | undefined;
+  if (usesApple && Platform.OS === 'ios') {
+    try {
+      const credential = await AppleAuthentication.signInAsync({ requestedScopes: [] });
+      appleAuthorizationCode = credential.authorizationCode ?? undefined;
+    } catch (e) {
+      if ((e as { code?: string }).code === 'ERR_REQUEST_CANCELED') {
+        throw new Error(t('errors.apple_reauth_required'));
+      }
+      throw e;
+    }
+  }
+
+  const { error } = await supabase.functions.invoke('delete-account', {
+    method: 'POST',
+    body: appleAuthorizationCode ? { appleAuthorizationCode } : {},
+  });
+  if (error) throw await toFriendlyError(error);
   await supabase.auth.signOut();
 }

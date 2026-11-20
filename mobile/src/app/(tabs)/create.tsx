@@ -20,20 +20,21 @@ import { useCredits } from '@/hooks/useCredits';
 import { generate } from '@/lib/api';
 import { modeOf, useModels, type CreateMode } from '@/lib/catalog';
 import { hasAiConsent } from '@/lib/consent';
-import { presetsFor } from '@/lib/presets';
+import { presetLabel, presetsFor } from '@/lib/presets';
 import { quoteCredits, type ParamValues } from '@/lib/pricing';
+import { t } from '@/i18n';
 import { makeStyles, radius, space, useTheme } from '@/theme';
 
 const MODE_OPTIONS: { value: CreateMode; label: string }[] = [
-  { value: 'video', label: 'Video' },
-  { value: 'image', label: 'Image' },
-  { value: 'edit', label: 'Edit' },
+  { value: 'video', label: t('create.modeVideo') },
+  { value: 'image', label: t('create.modeImage') },
+  { value: 'edit', label: t('create.modeEdit') },
 ];
 
 const PLACEHOLDERS: Record<CreateMode, string> = {
-  video: 'A neon city street in the rain, slow push-in...',
-  image: 'A chrome perfume bottle on black sand...',
-  edit: 'Make it golden hour and add a red umbrella...',
+  video: t('create.placeholderVideo'),
+  image: t('create.placeholderImage'),
+  edit: t('create.placeholderEdit'),
 };
 
 export default function CreateScreen() {
@@ -149,25 +150,25 @@ export default function CreateScreen() {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <PageHeader title="Create" subtitle="Describe it, pick a model — we’ll make it." />
+        <PageHeader title={t('create.title')} subtitle={t('create.subtitle')} />
 
         {promptParam && prompt === promptParam && (
           <View style={s.remixRow}>
-            <Text style={s.remixText}>Remixing a prompt</Text>
+            <Text style={s.remixText}>{t('create.remixing')}</Text>
             <Pressable onPress={() => setPrompt('')} accessibilityRole="button" hitSlop={8}>
-              <Text style={s.remixClear}>Clear</Text>
+              <Text style={s.remixClear}>{t('create.clear')}</Text>
             </Pressable>
           </View>
         )}
 
         <Segmented value={mode} options={MODE_OPTIONS} onChange={setMode} />
 
-        <SectionLabel>Model</SectionLabel>
+        <SectionLabel>{t('create.model')}</SectionLabel>
 
         {modelsLoading ? (
           <ActivityIndicator color={colors.textMuted} style={{ marginVertical: space.lg }} />
         ) : modelsError && models.length === 0 ? (
-          <Text style={s.error}>Could not load models: {modelsError}</Text>
+          <Text style={s.error}>{t('create.modelsError', { error: modelsError })}</Text>
         ) : (
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.modelRow}>
             {models.map((m) => (
@@ -191,7 +192,7 @@ export default function CreateScreen() {
           />
         )}
 
-        <SectionLabel>Prompt</SectionLabel>
+        <SectionLabel>{t('create.prompt')}</SectionLabel>
         <Card style={s.inputCard}>
           <TextInput
             value={prompt}
@@ -206,10 +207,10 @@ export default function CreateScreen() {
 
         {mode !== 'edit' && presets.length > 0 && (
           <>
-            <SectionLabel>{mode === 'video' ? 'Motion' : 'Style'}</SectionLabel>
+            <SectionLabel>{mode === 'video' ? t('create.motion') : t('create.style')}</SectionLabel>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.chips}>
               {presets.map((p) => (
-                <Chip key={p.id} label={p.label} selected={p.id === presetId} onPress={() => setPresetId(p.id)} />
+                <Chip key={p.id} label={presetLabel(p)} selected={p.id === presetId} onPress={() => setPresetId(p.id)} />
               ))}
             </ScrollView>
           </>
@@ -224,13 +225,13 @@ export default function CreateScreen() {
         )}
 
         <Button
-          title={model ? `Generate · ⚡ ${cost}` : 'Generate'}
+          title={model ? `${t('effect.generate')} · ⚡ ${cost}` : t('effect.generate')}
           onPress={onGenerate}
           disabled={!canSubmit}
           loading={submitting}
           style={{ marginTop: space.lg, height: 56 }}
         />
-        {missingImage && <Text style={s.hint}>Add a photo to continue.</Text>}
+        {missingImage && <Text style={s.hint}>{t('create.addPhoto')}</Text>}
         {error && <Text style={s.error}>{error}</Text>}
       </ScrollView>
     </View>

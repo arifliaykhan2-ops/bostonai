@@ -8,7 +8,8 @@
 // The cursor walks Week → Month → AllTime "Most Reactions", so the feed keeps
 // going after this week's top posts run out.
 import { feedRank, styleOf, toShowcaseRow, type CivitaiItem, type FeedStyle, type ShowcaseRow } from '../_shared/showcaseMap.ts';
-import { admin, corsHeaders, json } from '../_shared/http.ts';
+import { hiddenShowcaseIds } from '../_shared/blocked.ts';
+import { admin, corsHeaders, json, requireUser } from '../_shared/http.ts';
 
 /** all/video/image show photoreal posts (people first); anime has its own tab. */
 type Filter = 'all' | 'video' | 'image' | 'anime';
@@ -93,6 +94,8 @@ Deno.serve(async (req) => {
   const body = req.method === 'POST' ? ((await req.json().catch(() => ({}))) as Record<string, string | undefined>) : {};
   const param = (k: string) => body[k] ?? url.searchParams.get(k);
   const available = await availableModels();
+  const user = await requireUser(req).catch(() => null);
+  const hidden = await hiddenShowcaseIds(user?.id);
 
   try {
     const id = param('id');
@@ -102,7 +105,7 @@ Deno.serve(async (req) => {
       const one = await civitai({ imageId: num, limit: '1' });
       const it = one.items?.[0];
       const row = it ? toShowcaseRow(it, available) : 'noPrompt';
-      return typeof row === 'string' ? json({ item: null }) : json({ item: row });
+      return typeof row === 'string' || hidden.has(row.id) ? json({ item: null }) : json({ item: row });
     }
 
     const rawFilter = param('filter');
@@ -127,6 +130,8 @@ Deno.serve(async (req) => {
     } else {
       items = (await fillLane(filter, lanes[filter], TARGET, available, seen, style)).sort(byRank);
     }
+
+    items = items.filter((r) => !hidden.has(r.id));
 
     const exhausted =
       filter === 'all' || filter === 'anime' ? lanes.video.done && lanes.image.done : lanes[filter].done;

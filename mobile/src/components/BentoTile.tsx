@@ -5,6 +5,7 @@ import { Pressable, Text, View, type LayoutChangeEvent } from 'react-native';
 import { PlayIcon } from '@/components/Icons';
 import { tileAspect, type ShowcaseItem } from '@/lib/showcase';
 import { makeStyles, space } from '@/theme';
+import { t } from '@/i18n';
 
 /**
  * One tile of the Home bento grid. Shows a still frame; videos loop a light
@@ -36,7 +37,7 @@ export function BentoTile({
       onLayout={onLayout}
       onPress={onPress}
       accessibilityRole="button"
-      accessibilityLabel={`${isVideo ? 'Video' : 'Image'} by ${item.author ?? 'creator'}. ${item.prompt.slice(0, 80)}`}
+      accessibilityLabel={`${t(isVideo ? 'a11y.videoBy' : 'a11y.imageBy', { author: item.author ?? t('showcase.someone') })}. ${item.prompt.slice(0, 80)}`}
       style={({ pressed }) => [s.card, { aspectRatio: tileAspect(item) }, hero && s.hero, pressed && s.pressed]}
     >
       {near && item.preview_url ? (

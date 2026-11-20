@@ -2,6 +2,7 @@
 // PG videos and images that include their prompt, mapped to our models.
 // Public like sync-models: it only reads public data, gated by freshness.
 import { toShowcaseRow, type CivitaiItem } from '../_shared/showcaseMap.ts';
+import { hiddenShowcaseIds } from '../_shared/blocked.ts';
 import { admin, corsHeaders, json } from '../_shared/http.ts';
 
 const FRESH_MS = 3 * 60 * 60 * 1000;
@@ -51,6 +52,7 @@ Deno.serve(async (req) => {
 
   const { data: models } = await admin.from('models').select('id').eq('enabled', true);
   const available = new Set((models ?? []).map((m: { id: string }) => m.id));
+  const blocked = await hiddenShowcaseIds();
 
   const [videos, images] = await Promise.all([fetchCivitai('video'), fetchCivitai('image')]);
   const now = new Date().toISOString();
@@ -64,6 +66,7 @@ Deno.serve(async (req) => {
       if (seen.has(it.id)) continue;
       seen.add(it.id);
       const row = toShowcaseRow(it, available);
+      if (typeof row !== 'string' && blocked.has(row.id)) continue;
       if (typeof row === 'string') {
         if (row !== 'type') report.skipped[row]++;
         continue;

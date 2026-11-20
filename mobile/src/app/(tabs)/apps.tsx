@@ -5,8 +5,9 @@ import { ActivityIndicator, Platform, Pressable, ScrollView, Text, View } from '
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ScreenBackground } from '@/components/ScreenBackground';
 import { PageHeader } from '@/components/ui';
-import { useApps, type Effect } from '@/lib/effects';
+import { fx, useApps, type Effect } from '@/lib/effects';
 import { makeStyles, space } from '@/theme';
+import { t } from '@/i18n';
 
 /** Apps: one-photo tools (Relight, Headshot, Hair, Outfit Swap…), like Higgsfield's Apps. */
 export default function AppsScreen() {
@@ -25,7 +26,7 @@ export default function AppsScreen() {
         ]}
         showsVerticalScrollIndicator={false}
       >
-        <PageHeader title="Apps" subtitle="One photo in, pro result out." />
+        <PageHeader title={t('apps.title')} subtitle={t('apps.subtitle')} />
         {loading ? (
           <ActivityIndicator style={{ marginTop: space.xl }} />
         ) : (
@@ -45,7 +46,7 @@ function AppCard({ app }: { app: Effect }) {
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={`${app.title}. ${app.subtitle ?? ''}`}
+      accessibilityLabel={`${fx.title(app)}. ${fx.subtitle(app) ?? ''}`}
       onPress={() => {
         if (Platform.OS !== 'web') void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         router.push({ pathname: '/effect/[id]', params: { id: app.id } });
@@ -61,11 +62,11 @@ function AppCard({ app }: { app: Effect }) {
         ) : null}
       </View>
       <Text numberOfLines={1} style={s.title}>
-        {app.title}
+        {fx.title(app)}
       </Text>
       {app.subtitle ? (
         <Text numberOfLines={1} style={s.subtitle}>
-          {app.subtitle}
+          {fx.subtitle(app)}
         </Text>
       ) : null}
     </Pressable>

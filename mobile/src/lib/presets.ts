@@ -1,3 +1,4 @@
+import { tMaybe } from '@/i18n';
 import type { GenKind } from './catalog';
 
 /**
@@ -47,3 +48,6 @@ export const PRESETS: Preset[] = [
 ];
 
 export const presetsFor = (kind: GenKind) => PRESETS.filter((p) => p.kind === kind);
+
+/** Preset name in the app language (falls back to the English label). */
+export const presetLabel = (p: Preset) => tMaybe(`preset.${p.id}`, p.label);

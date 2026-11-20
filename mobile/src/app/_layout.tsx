@@ -11,6 +11,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useNotificationRouting } from '@/lib/notifications';
 import { AuthProvider, useAuth } from '@/providers/auth';
 import { fonts, ThemeProvider, useTheme } from '@/theme';
+import { t } from '@/i18n';
 
 export default function RootLayout() {
   // Same type as the web app: Archivo condensed for headlines, Inter for UI.
@@ -56,8 +57,8 @@ function RootNavigator() {
           <Stack.Screen name="job/[id]" options={{ headerShown: false }} />
           <Stack.Screen name="showcase/[id]" options={{ headerShown: false }} />
           <Stack.Screen name="effect/[id]" options={{ headerShown: false }} />
-          <Stack.Screen name="consent" options={{ presentation: 'modal', title: 'AI & your data' }} />
-          <Stack.Screen name="paywall" options={{ presentation: 'modal', title: 'Get credits' }} />
+          <Stack.Screen name="consent" options={{ presentation: 'modal', title: t('consent.navTitle') }} />
+          <Stack.Screen name="paywall" options={{ presentation: 'modal', title: t('paywall.navTitle') }} />
         </Stack.Protected>
         <Stack.Protected guard={!session}>
           <Stack.Screen name="sign-in" options={{ headerShown: false }} />

@@ -1,0 +1,5 @@
+{
+  "CFBundleDisplayName": "Boson AI",
+  "NSPhotoLibraryUsageDescription": "Το Boson AI χρησιμοποιεί τις φωτογραφίες σου για να μπορείς να τις μετατρέπεις σε βίντεο.",
+  "NSPhotoLibraryAddUsageDescription": "Το Boson AI αποθηκεύει τις εικόνες και τα βίντεο που δημιουργείς στη βιβλιοθήκη φωτογραφιών σου."
+}

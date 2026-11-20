@@ -5,9 +5,11 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ActionItem, ActionList, DetailHeader, MediaCard, MediaVideo, PromptCard } from '@/components/DetailParts';
 import { ScreenBackground } from '@/components/ScreenBackground';
 import { PublishIcon, ScissorsIcon } from '@/components/Icons';
+import { ReportAction } from '@/components/ReportAction';
 import { useModels } from '@/lib/catalog';
 import { tileAspect, useShowcaseItem } from '@/lib/showcase';
 import { makeStyles, space, useTheme } from '@/theme';
+import { t } from '@/i18n';
 
 /** A trending community creation: watch it, read the prompt, remix it with our closest model. */
 export default function ShowcaseDetailScreen() {
@@ -21,7 +23,7 @@ export default function ShowcaseDetailScreen() {
   if (!item) {
     return (
       <View style={[s.container, s.center]}>
-        {loading ? <ActivityIndicator /> : <Text style={s.muted}>This post is no longer in the feed.</Text>}
+        {loading ? <ActivityIndicator /> : <Text style={s.muted}>{t('showcase.gone')}</Text>}
       </View>
     );
   }
@@ -42,7 +44,7 @@ export default function ShowcaseDetailScreen() {
         showsVerticalScrollIndicator={false}
       >
         <DetailHeader
-          title={item.author ? `@${item.author}` : 'Community creation'}
+          title={item.author ? `@${item.author}` : t('showcase.community')}
           subtitle={[item.base_model, `♥ ${item.likes.toLocaleString()}`].filter(Boolean).join(' · ')}
         />
 
@@ -55,26 +57,31 @@ export default function ShowcaseDetailScreen() {
         </MediaCard>
 
         <ActionList>
-          <ActionItem icon={<ScissorsIcon size={28} color={colors.text} strokeWidth={2.2} />} label="Remix" onPress={remix} />
+          <ActionItem icon={<ScissorsIcon size={28} color={colors.text} strokeWidth={2.2} />} label={t('showcase.remix')} onPress={remix} />
           <ActionItem
             icon={<PublishIcon size={28} color={colors.text} strokeWidth={2.4} />}
-            label="View original"
+            label={t('showcase.viewOriginal')}
             onPress={() => void Linking.openURL(item.source_url)}
           />
+          <ReportAction targetType="showcase" targetId={item.id} onReported={() => router.back()} />
         </ActionList>
 
         <PromptCard
-          label="PROMPT"
-          modelName={model ? `Try with ${model.name}` : undefined}
+          label={t('showcase.promptLabel')}
+          modelName={model ? t('showcase.tryWith', { model: model.name }) : undefined}
           credits={model?.credits}
           prompt={item.prompt}
-          cta={model ? `Generate your own · ⚡ ${model.credits}` : 'Generate your own'}
+          cta={model ? `${t('showcase.generateOwn')} · ⚡ ${model.credits}` : t('showcase.generateOwn')}
           onCta={remix}
         />
 
         <Text style={s.attribution}>
-          Created by {item.author ? `@${item.author}` : 'a community member'} on Civitai with {item.base_model ?? 'an AI model'}.
-          {'\n'}Results with {model?.name ?? 'our models'} will differ — use it as a starting point.
+          {t('showcase.attribution', {
+            author: item.author ? `@${item.author}` : t('showcase.someone'),
+            model: item.base_model ?? t('showcase.anAiModel'),
+          })}
+          {'\n'}
+          {t('showcase.differ', { model: model?.name ?? t('showcase.ourModels') })}
         </Text>
       </ScrollView>
     </View>

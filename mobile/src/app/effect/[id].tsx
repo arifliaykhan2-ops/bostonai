@@ -12,7 +12,8 @@ import { Button, Chip } from '@/components/ui';
 import { useCredits } from '@/hooks/useCredits';
 import { generateEffect } from '@/lib/api';
 import { hasAiConsent } from '@/lib/consent';
-import { effectAspect, effectCost, useEffectById } from '@/lib/effects';
+import { t, tp } from '@/i18n';
+import { effectAspect, effectCost, fx, useEffectById } from '@/lib/effects';
 import { makeStyles, radius, space, useTheme } from '@/theme';
 
 /**
@@ -39,7 +40,7 @@ export default function EffectScreen() {
   if (!effect) {
     return (
       <View style={[s.container, s.center]}>
-        {loading ? <ActivityIndicator /> : <Text style={s.muted}>This template is no longer available.</Text>}
+        {loading ? <ActivityIndicator /> : <Text style={s.muted}>{t('errors.unknown_effect')}</Text>}
       </View>
     );
   }
@@ -77,7 +78,7 @@ export default function EffectScreen() {
     const asset = result.assets[0];
     const seconds = (asset.duration ?? 0) / 1000;
     if (seconds > videoInput.max_seconds + 0.5) {
-      setError(`Pick a video of ${videoInput.max_seconds} seconds or less (this one is ${Math.round(seconds)} s).`);
+      setError(t('effect.videoTooLong', { max: videoInput.max_seconds, seconds: Math.round(seconds) }));
       return;
     }
     setVideo({ uri: asset.uri, seconds });
@@ -131,8 +132,10 @@ export default function EffectScreen() {
         showsVerticalScrollIndicator={false}
       >
         <DetailHeader
-          title={effect.title}
-          subtitle={`${isApp ? 'App' : 'Trend template'} · ⚡ ${textInput ? `from ${effect.credits}` : effect.credits} credits`}
+          title={fx.title(effect)}
+          subtitle={`${isApp ? t('effect.kindApp') : t('effect.kindTemplate')} · ⚡ ${
+            textInput ? t('effect.fromCredits', { count: effect.credits }) : tp('common.credits', effect.credits)
+          }`}
         />
 
         <MediaCard aspectRatio={effectAspect(effect)}>
@@ -142,25 +145,27 @@ export default function EffectScreen() {
             <MediaVideo url={effect.preview_url} poster={effect.poster_url} muted />
           ) : (
             <LinearGradient colors={['#2A2A3A', '#0B0B10']} style={[s.fill, s.center]}>
-              <Text style={s.placeholderTitle}>{effect.title}</Text>
-              <Text style={s.muted}>Example coming soon</Text>
+              <Text style={s.placeholderTitle}>{fx.title(effect)}</Text>
+              <Text style={s.muted}>{t('effect.exampleSoon')}</Text>
             </LinearGradient>
           )}
         </MediaCard>
 
-        {effect.description ? <Text style={s.description}>{effect.description}</Text> : null}
+        {fx.description(effect) ? <Text style={s.description}>{fx.description(effect)}</Text> : null}
 
         <View style={s.card}>
           <Text style={s.step}>
-            1 · {effect.more_photos ? `Add 1–${1 + effect.more_photos} photos of you` : 'Add your photo'}
+            1 · {effect.more_photos ? t('effect.addPhotos', { max: 1 + effect.more_photos }) : t('effect.addPhoto')}
           </Text>
           <Text style={s.tip}>
-            {isApp ? 'Clear photo, good light' : `${effect.subtitle ?? 'Photo of one person'} · clear face, good light`}
+            {isApp
+              ? t('effect.tipApp')
+              : t('effect.tipTemplate', { who: fx.subtitle(effect) ?? t('effect.onePerson') })}
           </Text>
           <View style={s.slots}>
-            <PhotoSlot uri={photo} label={effect.image2 ? 'Your photo' : undefined} onPress={() => pick(setPhoto)} />
+            <PhotoSlot uri={photo} label={effect.image2 ? t('effect.yourPhoto') : undefined} onPress={() => pick(setPhoto)} />
             {effect.image2 ? (
-              <PhotoSlot uri={photo2} label={effect.image2.label} onPress={() => pick(setPhoto2)} />
+              <PhotoSlot uri={photo2} label={fx.image2Label(effect)} onPress={() => pick(setPhoto2)} />
             ) : null}
             {/* Optional extra references appear one at a time, after the previous one is filled. */}
             {Array.from({ length: effect.more_photos }, (_, i) =>
@@ -168,7 +173,7 @@ export default function EffectScreen() {
                 <PhotoSlot
                   key={i}
                   uri={morePhotos[i] ?? null}
-                  label="Optional"
+                  label={t('effect.optional')}
                   small
                   onPress={() =>
                     pick((uri) =>
@@ -186,16 +191,16 @@ export default function EffectScreen() {
 
           {videoInput ? (
             <View style={{ marginTop: space.md, gap: space.sm }}>
-              <Text style={s.step}>2 · {videoInput.label}</Text>
-              <Text style={s.tip}>One person, clearly visible, simple background works best.</Text>
+              <Text style={s.step}>2 · {fx.videoLabel(effect)}</Text>
+              <Text style={s.tip}>{t('effect.videoTip')}</Text>
               <Pressable
                 accessibilityRole="button"
-                accessibilityLabel={video ? 'Change video' : 'Choose video'}
+                accessibilityLabel={video ? t('effect.changeVideo') : t('effect.chooseVideo')}
                 onPress={pickVideo}
                 style={({ pressed }) => [s.videoSlot, !video && s.photoSlotEmpty, pressed && s.pressed]}
               >
                 <Text style={video ? s.videoPicked : s.plus}>
-                  {video ? `🎬  ${video.seconds.toFixed(1)} s · change` : '+'}
+                  {video ? `🎬  ${t('effect.videoPicked', { seconds: video.seconds.toFixed(1) })}` : '+'}
                 </Text>
               </Pressable>
             </View>
@@ -204,12 +209,12 @@ export default function EffectScreen() {
           {textInput ? (
             <View style={{ marginTop: space.md, gap: space.sm }}>
               <Text style={s.step}>
-                {scriptStep} · {textInput.label}
+                {scriptStep} · {fx.textLabel(effect)}
               </Text>
               <TextInput
                 value={script}
                 onChangeText={setScript}
-                placeholder={textInput.placeholder}
+                placeholder={fx.textPlaceholder(effect)}
                 placeholderTextColor={colors.textSubtle}
                 maxLength={textInput.max}
                 multiline
@@ -224,13 +229,13 @@ export default function EffectScreen() {
           {effect.choices.map((c, i) => (
             <View key={c.field} style={{ marginTop: space.md }}>
               <Text style={s.step}>
-                {i + firstChoiceStep} · {c.label}
+                {i + firstChoiceStep} · {fx.choiceLabel(effect, c)}
               </Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.chips}>
                 {c.options.map((o) => (
                   <Chip
                     key={String(o.value)}
-                    label={o.label}
+                    label={fx.optionLabel(effect, c, o)}
                     selected={choiceValue(c.field, c.default) === o.value}
                     onPress={() => setPicked((p) => ({ ...p, [c.field]: o.value }))}
                   />
@@ -250,28 +255,26 @@ export default function EffectScreen() {
                 {consented ? <Text style={s.checkMark}>✓</Text> : null}
               </View>
               <Text style={s.consentText}>
-                {textInput
-                  ? 'This is me, or I have this person’s permission to make them speak.'
-                  : 'The photos are of me, or I have this person’s permission to use them.'}
+                {textInput ? t('effect.consentSpeak') : t('effect.consentPhotos')}
               </Text>
             </Pressable>
           ) : null}
 
-          <Text style={[s.step, { marginTop: space.md }]}>{effect.choices.length + firstChoiceStep} · Generate</Text>
+          <Text style={[s.step, { marginTop: space.md }]}>{effect.choices.length + firstChoiceStep} · {t('effect.generateStep')}</Text>
           {error ? <Text style={s.error}>{error}</Text> : null}
           <Button
             title={
               ready
-                ? `✦ ${isImage ? 'Generate' : 'Make my video'} · ${cost} ⚡`
+                ? `✦ ${isImage ? t('effect.generate') : t('effect.makeVideo')} · ${cost} ⚡`
                 : !photo
-                  ? 'Choose a photo first'
+                  ? t('errors.image_required')
                   : effect.image2 && !photo2
-                    ? `Add the ${effect.image2.label.toLowerCase()}`
+                    ? t('effect.addSecond', { what: fx.image2Label(effect) })
                     : videoInput && !video
-                      ? 'Choose a video'
+                      ? t('effect.chooseVideo')
                       : !scriptOk
-                        ? 'Write what they should say'
-                        : 'Confirm permission above'
+                        ? t('effect.writeScript')
+                        : t('effect.confirmPermission')
             }
             onPress={onGenerate}
             disabled={!ready}
@@ -279,7 +282,7 @@ export default function EffectScreen() {
             style={{ height: 54 }}
           />
           <Text style={s.fine}>
-            {isImage ? 'Takes about 30 seconds.' : 'Takes 1–5 minutes.'} Failed runs are refunded automatically.
+            {isImage ? t('effect.timeImage') : t('effect.timeVideo')} {t('effect.refundNote')}
           </Text>
         </View>
       </ScrollView>
@@ -303,7 +306,7 @@ function PhotoSlot({
     <View style={s.slotWrap}>
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel={uri ? `Change ${label ?? 'photo'}` : `Choose ${label ?? 'photo'}`}
+        accessibilityLabel={uri ? t('effect.changeX', { what: label ?? t('effect.photo') }) : t('effect.chooseX', { what: label ?? t('effect.photo') })}
         onPress={onPress}
         style={({ pressed }) => [s.photoSlot, small && s.photoSlotSmall, !uri && s.photoSlotEmpty, pressed && s.pressed]}
       >

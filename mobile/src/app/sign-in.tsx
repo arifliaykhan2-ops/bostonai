@@ -6,6 +6,7 @@ import { Button } from '@/components/ui';
 import { isExpoGo } from '@/lib/env';
 import { isSupabaseConfigured, supabase } from '@/lib/supabase';
 import { makeStyles, radius, space, useTheme } from '@/theme';
+import { t } from '@/i18n';
 
 export default function SignInScreen() {
   const [email, setEmail] = useState('');
@@ -30,7 +31,7 @@ export default function SignInScreen() {
       if (error) throw error;
     } catch (e) {
       if ((e as { code?: string }).code === 'ERR_REQUEST_CANCELED') return;
-      Alert.alert('Sign in failed', e instanceof Error ? e.message : String(e));
+      Alert.alert(t('signin.failed'), e instanceof Error ? e.message : String(e));
     }
   }
 
@@ -42,7 +43,7 @@ export default function SignInScreen() {
       options: { emailRedirectTo: Linking.createURL('/') },
     });
     setBusy(false);
-    if (error) Alert.alert('Could not send email', error.message);
+    if (error) Alert.alert(t('signin.emailFailed'), error.message);
     else setLinkSent(true);
   }
 
@@ -50,7 +51,7 @@ export default function SignInScreen() {
     <KeyboardAvoidingView style={styles.screen} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <View style={styles.hero}>
         <Text style={styles.logo}>Boson AI</Text>
-        <Text style={styles.subtitle}>Turn ideas and photos into cinematic video.</Text>
+        <Text style={styles.subtitle}>{t('signin.tagline')}</Text>
       </View>
 
       {!isSupabaseConfigured && (
@@ -87,16 +88,13 @@ export default function SignInScreen() {
         />
         {linkSent ? (
           <>
-            <Text style={styles.hint}>
-              We sent a sign-in link to {email.trim()}. Open the email on this phone and tap the link — the app
-              will sign you in automatically.
-            </Text>
-            <Button title="Resend link" variant="secondary" loading={busy} onPress={sendLink} />
-            <Button title="Use a different email" variant="secondary" onPress={() => setLinkSent(false)} />
+            <Text style={styles.hint}>{t('signin.linkSent', { email: email.trim() })}</Text>
+            <Button title={t('signin.resend')} variant="secondary" loading={busy} onPress={sendLink} />
+            <Button title={t('signin.differentEmail')} variant="secondary" onPress={() => setLinkSent(false)} />
           </>
         ) : (
           <Button
-            title="Continue with email"
+            title={t('signin.continueEmail')}
             variant={Platform.OS === 'ios' && !isExpoGo ? 'secondary' : 'primary'}
             loading={busy}
             disabled={!isSupabaseConfigured || !email.includes('@')}

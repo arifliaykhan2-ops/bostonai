@@ -8,6 +8,7 @@ import { Platform, Pressable, Text, View } from 'react-native';
 import { ChevronLeftIcon } from '@/components/Icons';
 import { Button } from '@/components/ui';
 import { fonts, makeStyles, radius, space, useTheme } from '@/theme';
+import { isRTL, t } from '@/i18n';
 
 /** Shared building blocks for the Showcase and Result detail screens. */
 
@@ -21,9 +22,14 @@ export function DetailHeader({ title, subtitle, right }: { title: string; subtit
           onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))}
           style={({ pressed }) => [s.backButton, pressed && s.pressed]}
           accessibilityRole="button"
-          accessibilityLabel="Back"
+          accessibilityLabel={t('common.back')}
         >
-          <ChevronLeftIcon size={22} color={colors.text} strokeWidth={2.4} />
+          <ChevronLeftIcon
+            size={22}
+            color={colors.text}
+            strokeWidth={2.4}
+            style={isRTL ? { transform: [{ scaleX: -1 }] } : undefined}
+          />
         </Pressable>
         <View style={s.titleGroup}>
           <Text numberOfLines={1} style={s.title}>
@@ -131,7 +137,7 @@ export function PromptCard({
           {prompt}
         </Text>
         <Pressable onPress={copy} style={({ pressed }) => [s.copyBtn, pressed && s.pressed]} accessibilityRole="button">
-          <Text style={s.copyBtnText}>{copied ? '✓ Copied' : 'Copy prompt'}</Text>
+          <Text style={s.copyBtnText}>{copied ? `✓ ${t('common.copied')}` : t('common.copyPrompt')}</Text>
         </Pressable>
       </View>
 
