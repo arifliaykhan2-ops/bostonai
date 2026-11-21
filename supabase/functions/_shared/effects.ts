@@ -51,6 +51,8 @@ export type TextInput = {
   credits_per_char: number;
   /** The user must confirm the photo is them or that they have permission. */
   consent?: boolean;
+  /** Text seed-effect-previews uses to render the example (e.g. "table" for Object Eraser). */
+  sample?: string;
 };
 
 /** Credits for one run: the row's base price, plus the script's length when it has one. */
@@ -119,15 +121,22 @@ export function buildEffectInput(
   effect: EffectRow,
   urls: InputUrls,
   choices: Record<string, unknown> = {},
+  text = '',
 ): Record<string, unknown> {
-  const photos = [urls.photo, ...(urls.more ?? [])];
+  // A second photo that goes into the same array as the first (Face Swap: [face, target]).
+  const photo2InArray = effect.image_array && effect.image2?.field === effect.image_field;
+  const photos = [urls.photo, ...(photo2InArray && urls.photo2 ? [urls.photo2] : []), ...(urls.more ?? [])];
+  // The user's text goes straight to the endpoint (Object Eraser), unless the server
+  // speaks it first (Talking Photo) or keeps it for itself ("__" fields).
+  const directText = effect.text_input && !effect.tts && !effect.text_input.field.startsWith('__') && text;
   return {
     ...effect.extra,
     // "__" choices (e.g. the TTS voice) are for the server, not the endpoint.
     ...Object.fromEntries(Object.entries(choices).filter(([k]) => !k.startsWith('__'))),
     ...(effect.section === 'trend' ? { [effect.field]: effect.value } : {}),
+    ...(directText ? { [effect.text_input!.field]: directText } : {}),
+    ...(effect.image2 && urls.photo2 && !photo2InArray ? { [effect.image2.field]: urls.photo2 } : {}),
     [effect.image_field]: effect.image_array ? photos : urls.photo,
-    ...(effect.image2 && urls.photo2 ? { [effect.image2.field]: urls.photo2 } : {}),
     ...(effect.video_input && urls.video ? { [effect.video_input.field]: urls.video } : {}),
   };
 }

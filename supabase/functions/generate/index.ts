@@ -280,7 +280,7 @@ async function runEffect(userId: string, body: Body) {
     const res = await fetch(`https://queue.fal.run/${effect.endpoint}?fal_webhook=${encodeURIComponent(webhook)}`, {
       method: 'POST',
       headers: { Authorization: `Key ${FAL_KEY}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...buildEffectInput(effect, { photo: url, photo2: url2, more, video }, choices), ...spoken }),
+      body: JSON.stringify({ ...buildEffectInput(effect, { photo: url, photo2: url2, more, video }, choices, text), ...spoken }),
     });
     if (!res.ok) throw new Error(`fal.ai ${res.status}: ${await res.text()}`);
     const { request_id } = (await res.json()) as { request_id: string };
