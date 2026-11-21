@@ -1,14 +1,17 @@
-// Renders the example video for each trend template (public.effects) so the
-// Home strip can show what the effect does. Admin-only: requires the
-// x-admin-token header to match the ADMIN_TOKEN secret.
+// Renders the example for each trend template without a preview video, and for
+// each Apps tab tool without a poster, so the feed shows what it does.
+// Admin-only: requires the x-admin-token header to match the ADMIN_TOKEN secret.
 //
 // Each call is one "tick" — call it every minute until `pending` is 0:
-//   1. makes two AI-generated sample people (one person, a couple) once
-//   2. submits every effect without a preview to the fal queue
+//   1. makes the AI-generated sample photos (one person, a couple, a scene) once
+//   2. submits every row that needs an example to the fal queue
 //   3. collects finished renders into the public effect-previews bucket
+// Apps run on their own example input (`before_url`) when they have one, else on
+// the sample person; a second photo is the sample scene, a text input its `sample`.
+// Apps that need a video input are skipped: give them a fal example in SQL.
 // A render that fails is marked "failed:…" and not retried (no repeat spend)
 // unless the call passes ?retry=1.
-import { buildEffectInput, EFFECT_COLUMNS, type EffectRow } from '../_shared/effects.ts';
+import { buildEffectInput, EFFECT_COLUMNS, resolveChoices, type EffectRow } from '../_shared/effects.ts';
 import { admin, corsHeaders, json } from '../_shared/http.ts';
 
 const FAL_KEY = Deno.env.get('FAL_KEY')!;
@@ -24,6 +27,10 @@ const SAMPLES = {
   couple:
     'Realistic full-body photo of a happy adult couple, a man and a woman in their late twenties, standing side by side ' +
     'in a green park, casual outfits, both facing the camera, faces clearly visible, natural daylight, shot on 35mm, vertical frame',
+  // Second photo for two-photo apps (the target of Face Swap).
+  scene:
+    'Realistic photo of an adult woman astronaut in a white spacesuit standing on the surface of the moon, helmet held ' +
+    'under her arm, Earth in the black sky behind, face clearly visible, cinematic light, shot on 35mm, vertical frame',
 } as const;
 
 const publicUrl = (path: string) => admin.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
@@ -63,21 +70,30 @@ Deno.serve(async (req) => {
   if (!ADMIN_TOKEN || req.headers.get('x-admin-token') !== ADMIN_TOKEN) return json({ error: 'forbidden' }, 403);
   const retry = new URL(req.url).searchParams.get('retry') === '1';
 
-  const { data: rows, error } = await admin.from('effects').select(EFFECT_COLUMNS).is('preview_url', null).order('sort');
+  const { data: rows, error } = await admin
+    .from('effects')
+    .select(`${EFFECT_COLUMNS}, before_url`)
+    .or('and(section.eq.trend,preview_url.is.null),and(section.eq.app,poster_url.is.null,video_input.is.null)')
+    .order('sort');
   if (error) return json({ error: error.message }, 500);
-  const effects = (rows ?? []) as EffectRow[];
+  const effects = (rows ?? []) as (EffectRow & { before_url: string | null })[];
   if (!effects.length) return json({ ok: true, pending: 0 });
 
-  let samples: { single: string; couple: string };
+  let samples: Record<keyof typeof SAMPLES, string>;
   try {
-    samples = { single: await sampleImage('single'), couple: await sampleImage('couple') };
+    samples = {
+      single: await sampleImage('single'),
+      couple: await sampleImage('couple'),
+      scene: await sampleImage('scene'),
+    };
   } catch (e) {
     return json({ error: 'sample_failed', detail: String(e).slice(0, 500) }, 502);
   }
 
   const report: Record<string, string> = {};
   for (const effect of effects) {
-    const sample = effect.category === 'couples' ? samples.couple : samples.single;
+    const isApp = effect.section === 'app';
+    const sample = isApp && effect.before_url ? effect.before_url : effect.category === 'couples' ? samples.couple : samples.single;
     const req = effect.preview_request;
     try {
       if (req?.startsWith('failed:') && !retry) {
@@ -89,7 +105,14 @@ Deno.serve(async (req) => {
         const res = await fetch(`https://queue.fal.run/${effect.endpoint}`, {
           method: 'POST',
           headers: falHeaders,
-          body: JSON.stringify(buildEffectInput(effect, { photo: sample })),
+          body: JSON.stringify(
+            buildEffectInput(
+              effect,
+              { photo: sample, photo2: effect.image2 ? samples.scene : undefined },
+              resolveChoices(effect, {}) ?? {},
+              effect.text_input?.sample ?? '',
+            ),
+          ),
         });
         if (!res.ok) throw new Error(`submit ${res.status}: ${(await res.text()).slice(0, 200)}`);
         const { request_id } = (await res.json()) as { request_id: string };
@@ -108,15 +131,29 @@ Deno.serve(async (req) => {
       }
 
       const result = await fetch(`https://queue.fal.run/${appId(effect.endpoint)}/requests/${req}`, { headers: falHeaders });
-      const body = (await result.json().catch(() => ({}))) as { video?: { url?: string }; detail?: unknown };
-      const videoUrl = body.video?.url;
-      if (!result.ok || !videoUrl) throw new Error(`render: ${JSON.stringify(body.detail ?? body).slice(0, 200)}`);
+      const body = (await result.json().catch(() => ({}))) as {
+        video?: { url?: string };
+        images?: { url?: string }[];
+        image?: { url?: string };
+        detail?: unknown;
+      };
+      const outUrl = effect.kind === 'video' ? body.video?.url : (body.images?.[0]?.url ?? body.image?.url);
+      if (!result.ok || !outUrl) throw new Error(`render: ${JSON.stringify(body.detail ?? body).slice(0, 200)}`);
 
-      const preview = await copyToBucket(videoUrl, `videos/${effect.id}.mp4`, 'video/mp4');
-      await admin
-        .from('effects')
-        .update({ preview_url: preview, poster_url: sample, preview_request: null })
-        .eq('id', effect.id);
+      if (effect.kind === 'video') {
+        const preview = await copyToBucket(outUrl, `videos/${effect.id}.mp4`, 'video/mp4');
+        await admin
+          .from('effects')
+          .update({ preview_url: preview, poster_url: sample, preview_request: null })
+          .eq('id', effect.id);
+      } else {
+        // Image app: the result is the tile, the input photo its "before" inset.
+        const poster = await copyToBucket(outUrl, `images/${effect.id}.jpg`, 'image/jpeg');
+        await admin
+          .from('effects')
+          .update({ poster_url: poster, before_url: sample, preview_request: null })
+          .eq('id', effect.id);
+      }
       report[effect.id] = 'done';
     } catch (e) {
       const msg = `failed:${String(e).slice(0, 180)}`;

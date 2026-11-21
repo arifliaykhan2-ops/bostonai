@@ -134,7 +134,7 @@ export default function EffectScreen() {
         <DetailHeader
           title={fx.title(effect)}
           subtitle={`${isApp ? t('effect.kindApp') : t('effect.kindTemplate')} · ⚡ ${
-            textInput ? t('effect.fromCredits', { count: effect.credits }) : tp('common.credits', effect.credits)
+            textInput?.credits_per_char ? t('effect.fromCredits', { count: effect.credits }) : tp('common.credits', effect.credits)
           }`}
         />
 
